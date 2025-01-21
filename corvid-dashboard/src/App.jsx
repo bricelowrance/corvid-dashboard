@@ -2,6 +2,7 @@ import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import OverviewPage from "./pages/OverviewPage";
+import BSPage from "./pages/BSPage";
 import AteaBSPage from "./pages/atea/AteaBSPage";
 import AteaISPage from "./pages/atea/AteaISPage";
 import AteaTPage from "./pages/atea/AteaTPage";
@@ -50,6 +51,7 @@ function App() {
                 {isLoggedIn ? (
                     <>
                         <Route path="/" element={<OverviewPage />} />
+                        <Route path="/bs" element={<BSPage />} />
                         <Route path="/ateabs" element={<AteaBSPage />} />
                         <Route path="/ateais" element={<AteaISPage />} />
                         <Route path="/ateat" element={<AteaTPage />} />

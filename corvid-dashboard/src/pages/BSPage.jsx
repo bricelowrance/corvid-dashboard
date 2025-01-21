@@ -1,8 +1,7 @@
 import Header from "../components/common/Header"
-import IncomeCharts from "../components/overview/IncomeCharts"
-import ConsolidatedISTable from "../components/overview/ConsolidatedISTable"
+import ConsolidatedBSTable from "../components/overview/ConsolidatedBSTable"
 
-const OverviewPage = () => {
+const BSPage = () => {
   return (
     <div className="flex-1 overflow-auto relative z-10">
         <Header title="Dashboard" />
@@ -12,7 +11,7 @@ const OverviewPage = () => {
             {/* CHARTS */}
 
             <div className="grid grid-cols-1 gap-8 mb-8">
-                <ConsolidatedISTable />
+                <ConsolidatedBSTable />
             </div>
             
         </main>
@@ -21,4 +20,4 @@ const OverviewPage = () => {
   )
 }
 
-export default OverviewPage
+export default BSPage;

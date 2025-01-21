@@ -8,10 +8,10 @@ const LoginPage = ({ onLoginSuccess }) => {
     const [isLoading, setIsLoading] = useState(false);
 
     const handleLogin = async (e) => {
-        e.preventDefault(); 
-        setErrorMessage(""); 
-        setIsLoading(true); 
-
+        e.preventDefault();
+        setErrorMessage("");
+        setIsLoading(true);
+    
         try {
             const response = await fetch("http://localhost:5000/login", {
                 method: "POST",
@@ -20,22 +20,20 @@ const LoginPage = ({ onLoginSuccess }) => {
                 },
                 body: JSON.stringify({ username, password }),
             });
-
+    
             const data = await response.json();
-
+    
             if (!response.ok) {
-                
                 setErrorMessage(data.error || "Login failed");
             } else {
-                console.log("Login successful", data);
-                localStorage.setItem("token", data.token); 
-                onLoginSuccess(); 
+                localStorage.setItem("token", data.token); // Save the token
+                onLoginSuccess(); // Trigger callback to refresh the UI or navigate
             }
         } catch (error) {
             console.error("Error logging in:", error);
             setErrorMessage("An error occurred during login. Please try again.");
         } finally {
-            setIsLoading(false); 
+            setIsLoading(false);
         }
     };
 

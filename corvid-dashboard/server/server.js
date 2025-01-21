@@ -34,13 +34,16 @@ app.post("/login", async (req, res) => {
         }
 
         const token = jwt.sign(
-            { id: user.id, username: user.username },
+            { id: user.id, username: user.username, first_name: user.first_name, last_name: user.last_name },
             secretKey,
-            { expiresIn: "1h" } 
-            
+            { expiresIn: "1h" }
         );
 
-        res.json({ message: "Login successful", token });
+        res.json({
+            message: "Login successful",
+            token,
+            user: { first_name: user.first_name, last_name: user.last_name },
+        });
     } catch (error) {
         console.error("Error during login:", error);
         res.status(500).json({ error: "An error occurred during login. Please try again later." });
@@ -80,7 +83,41 @@ app.get("/data", async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 5000;
+app.get("/income", async (req, res) => {
+    try {
+        const { entity } = req.query;
+
+        let query = `
+            SELECT category, period, SUM(amount) AS amount
+            FROM financial_data.consolidated_income
+        `;
+        const values = [];
+
+        if (entity && entity !== "All") {
+            query += ` WHERE entity = $1`;
+            values.push(entity);
+        }
+
+        query += ` GROUP BY category, period ORDER BY category, period`;
+
+        const result = await pool.query(query, values);
+
+        const incomeData = result.rows.map(({ category, period, amount }) => ({
+            category,
+            period,
+            amount: parseFloat(amount),
+        }));
+
+        res.json(incomeData);
+    } catch (err) {
+        console.error("Error fetching consolidated income data:", err.message);
+        res.status(500).send("Server Error");
+    }
+});
+
+
+
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

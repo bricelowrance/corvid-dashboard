@@ -1,60 +1,13 @@
-import { BarChart2, Menu, ChevronDown, HomeIcon } from "lucide-react"
+import { BarChart2, Menu, ChevronDown, HomeIcon, BarChart } from "lucide-react"
 import { useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { Link } from "react-router-dom"
 
 const SIDEBAR_ITEMS = [
-    { name:"Home", icon:HomeIcon, color:"white", href:"/",
+    { name:"Income Statement", icon:BarChart2, color:"white", href:"/",
      },
-    { name:"Corvid Technologies", icon:BarChart2, color:"white", href:"",
-        children: [
-            { name: "Balance Sheet", href: "/corvidbs" },
-            { name: "Income Statement", href: "/corvidis" },
-            { name: "Consolidated IS", href: "/corvidt" },
-          ],
-     },
-    { name:"HPC", icon:BarChart2, color:"white", href:"",
-        children: [
-            { name: "Balance Sheet", href: "/hpcbs" },
-            { name: "Income Statement", href: "/hpsis" },
-            { name: "Trailing 12", href: "/hpct" },
-          ],
-     },
-    { name:"ATEA", icon:BarChart2, color:"white", href:"",
-        children: [
-            { name: "Balance Sheet", href: "/ateabs" },
-            { name: "Income Statement", href: "/ateais" },
-            { name: "Trailing 12", href: "/ateat" },
-          ],
-     },
-    { name:"Talon", icon:BarChart2, color:"white", href:"",
-        children: [
-            { name: "Balance Sheet", href: "/talonbs" },
-            { name: "Income Statement", href: "/talonis" },
-            { name: "Trailing 12", href: "/talont" },
-          ],
-     },
-    { name:"TRDP", icon:BarChart2, color:"white", href:"",
-        children: [
-            { name: "Balance Sheet", href: "/trdpbs" },
-            { name: "Income Statement", href: "/trdpis" },
-            { name: "Trailing 12", href: "/trdpt" },
-          ],
-     },
-    { name:"Lyn Aerospace", icon:BarChart2, color:"white", href:"",
-        children: [
-            { name: "Balance Sheet", href: "/lynbs" },
-            { name: "Income Statement", href: "/lynis" },
-            { name: "Trailing 12", href: "/lynt" },         
-          ],
-     },
-    { name:"Corvid Cyberdefense", icon:BarChart2, color:"white", href:"",
-        children: [
-            { name: "Balance Sheet", href: "/cyberbs" },
-            { name: "Income Statement", href: "/cyberis" },
-            { name: "Trailing 12", href: "/cybert" },
-          ],
-     },
+    { name:"Balance Sheet", icon:BarChart2, color:"white", href:"/bs",
+     }
 ]
 const Sidebar = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -126,7 +79,7 @@ const Sidebar = () => {
                     <nav className="mt-4">
                         {SIDEBAR_ITEMS.map((item, index) => (
                             <div key={item.name}>
-                                {item.name === "Home" ? (
+                                {item.name === "Balance Sheet" || "Income Statement" ? (
                                     <Link to={item.href}>
                                         <div
                                             className={`flex items-center ${
