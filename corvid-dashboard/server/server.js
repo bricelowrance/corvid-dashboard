@@ -93,7 +93,7 @@ app.get("/income", async (req, res) => {
         `;
         const values = [];
 
-        if (entity && entity !== "All") {
+        if (entity && entity !== "Consolidated") {
             query += ` WHERE entity = $1`;
             values.push(entity);
         }
@@ -115,9 +115,73 @@ app.get("/income", async (req, res) => {
     }
 });
 
+app.get("/balance", async (req, res) => {
+    try {
+        const { entity } = req.query;
+
+        let query = `
+            SELECT category, period, SUM(amount) AS amount
+            FROM financial_data.consolidated_balance
+        `;
+        const values = [];
+
+        if (entity && entity !== "Consolidated") {
+            query += ` WHERE entity = $1`;
+            values.push(entity);
+        }
+
+        query += ` GROUP BY category, period ORDER BY category, period`;
+
+        const result = await pool.query(query, values);
+
+        const incomeData = result.rows.map(({ category, period, amount }) => ({
+            category,
+            period,
+            amount: parseFloat(amount),
+        }));
+
+        res.json(incomeData);
+    } catch (err) {
+        console.error("Error fetching consolidated balance data:", err.message);
+        res.status(500).send("Server Error");
+    }
+});
+
+app.get("/subcategories", async (req, res) => {
+    try {
+        const { entity } = req.query;
+
+        let query = `
+            SELECT category, subcategory, period, SUM(amount) AS amount
+            FROM financial_data.consolidated_b
+        `;
+        const values = [];
+
+        if (entity && entity !== "Consolidated") {
+            query += ` WHERE entity = $1`;
+            values.push(entity);
+        }
+
+        query += ` GROUP BY category, subcategory, period ORDER BY category, subcategory, period`;
+
+        const result = await pool.query(query, values);
+
+        const subcategoryData = result.rows.map(({ category, subcategory, period, amount }) => ({
+            category,
+            subcategory,
+            period,
+            amount: parseFloat(amount),
+        }));
+
+        res.json(subcategoryData);
+    } catch (err) {
+        console.error("Error fetching subcategories data:", err.message);
+        res.status(500).send("Server Error");
+    }
+});
 
 
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

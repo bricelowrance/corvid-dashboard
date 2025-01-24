@@ -1,160 +1,203 @@
-import React, { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 const ConsolidatedBSTable = () => {
-    const [expandedSections, setExpandedSections] = useState({});
-
-    const toggleSection = (section) => {
-        setExpandedSections((prev) => ({
-            ...prev,
-            [section]: !prev[section],
-        }));
-    };
+    const [selectedCompany, setSelectedCompany] = useState("Consolidated");
+    const [incomeData, setIncomeData] = useState({});
+    const [loading, setLoading] = useState(true);
 
     const months = [
-        "JAN 2024", "FEB 2024", "MAR 2024", "APR 2024",
-        "MAY 2024", "JUN 2024", "JUL 2024", "AUG 2024",
-        "SEP 2024", "OCT 2024", "NOV 2024", "DEC 2024",
+        "Jan 2024",
+        "Feb 2024",
+        "Mar 2024",
+        "Apr 2024",
+        "May 2024",
+        "Jun 2024",
+        "Jul 2024",
+        "Aug 2024",
+        "Sep 2024",
+        "Oct 2024",
+        "Nov 2024",
+        "Dec 2024",
     ];
 
-    const data = [
-        {
-            category: "Current Assets",
-            values: [105223, 110000, 120000, 130000, 125000, 135000, 140000, 150000, 145000, 155000, 160000, 165000],
-            subcategories: [
-                { name: "Cash", values: [6100, 6200, 6300, 6400, 6500, 6600, 6700, 6800, 6900, 7000, 7100, 7200] },
-                { name: "Accounts Receivable", values: [38400, 39000, 40000, 41000, 42000, 43000, 44000, 45000, 46000, 47000, 48000, 49000] },
-                { name: "Unbilled Receivable", values: [37296, 37300, 37400, 37500, 37600, 37700, 37800, 37900, 38000, 38100, 38200, 38300] },
-                { name: "Other Current Assets", values: [28904, 29000, 29100, 29200, 29300, 29400, 29500, 29600, 29700, 29800, 29900, 30000] },
-            ],
-        },
-        {
-            category: "Net Fixed Assets",
-            values: [20748, 20800, 20900, 21000, 21100, 21200, 21300, 21400, 21500, 21600, 21700, 21800],
-            subcategories: [],
-        },
-        {
-            category: "Deposits",
-            values: [20748, 20800, 20900, 21000, 21100, 21200, 21300, 21400, 21500, 21600, 21700, 21800],
-            subcategories: [],
-        },
-        {
-            category: "Total Assets",
-            values: [20748, 20800, 20900, 21000, 21100, 21200, 21300, 21400, 21500, 21600, 21700, 21800],
-            subcategories: [],
-        },
-        {
-            category: "Current Liabilities",
-            values: [102815, 103000, 104000, 105000, 106000, 107000, 108000, 109000, 110000, 111000, 112000, 113000],
-            subcategories: [
-                { name: "Accounts Payable", values: [21804, 21900, 22000, 22100, 22200, 22300, 22400, 22500, 22600, 22700, 22800, 22900] },
-                { name: "Payroll Liabilities", values: [8056, 8100, 8150, 8200, 8250, 8300, 8350, 8400, 8450, 8500, 8550, 8600] },
-                { name: "Accrued Expenses", values: [13156, 13200, 13300, 13400, 13500, 13600, 13700, 13800, 13900, 14000, 14100, 14200] },
-                { name: "Deferred Revenue", values: [47716, 47800, 47900, 48000, 48100, 48200, 48300, 48400, 48500, 48600, 48700, 48800] },
-                { name: "Other Current Liabilities", values: [12081, 12100, 12200, 12300, 12400, 12500, 12600, 12700, 12800, 12900, 13000, 13100] },
-            ],
-        },
-        {
-            category: "Long-Term Liabilities",
-            values: [102815, 103000, 104000, 105000, 106000, 107000, 108000, 109000, 110000, 111000, 112000, 113000],
-            subcategories: [
-                { name: "Line of Credit", values: [21804, 21900, 22000, 22100, 22200, 22300, 22400, 22500, 22600, 22700, 22800, 22900] },
-                { name: "Term Loan", values: [8056, 8100, 8150, 8200, 8250, 8300, 8350, 8400, 8450, 8500, 8550, 8600] },
-                { name: "Equipment Loan", values: [13156, 13200, 13300, 13400, 13500, 13600, 13700, 13800, 13900, 14000, 14100, 14200] },
-                { name: "Land Loan", values: [47716, 47800, 47900, 48000, 48100, 48200, 48300, 48400, 48500, 48600, 48700, 48800] },
-            ],
-        },
-        {
-            category: "Total Liabilities",
-            values: [20748, 20800, 20900, 21000, 21100, 21200, 21300, 21400, 21500, 21600, 21700, 21800],
-            subcategories: [],
-        },
-        {
-            category: "Equity",
-            values: [102815, 103000, 104000, 105000, 106000, 107000, 108000, 109000, 110000, 111000, 112000, 113000],
-            subcategories: [
-                { name: "Retained Earnings", values: [21804, 21900, 22000, 22100, 22200, 22300, 22400, 22500, 22600, 22700, 22800, 22900] },
-                { name: "Dividends", values: [8056, 8100, 8150, 8200, 8250, 8300, 8350, 8400, 8450, 8500, 8550, 8600] },
-            ],
-        },
-        {
-            category: "Total Liabilities and Equity",
-            values: [20748, 20800, 20900, 21000, 21100, 21200, 21300, 21400, 21500, 21600, 21700, 21800],
-            subcategories: [],
-        },
+    const categories = [
+        "CASH",
+        "ACCOUNTS RECEIVABLE",
+        "UNBILLED RECEIVABLE",
+        "OTHER CURRENT ASSETS",
+        "CURRENT ASSETS",
+        "NET FIXED ASSETS",
+        "DEPOSITS",
+        "TOTAL ASSETS",
+        "ACCOUNTS PAYABLE",
+        "PAYROLL LIABILITIES",
+        "ACCRUED EXPENSES",
+        "DEFERRED REVENUE",
+        "OTHER CURRENT LIABILITIES",
+        "CURRENT LIABILITIES",
+        "LINE OF CREDIT",
+        "TERM LOAN",
+        "EQUIPMENT LOAN",
+        "LAND LOAN",
+        "LONG TERM LIABILITIES",
+        "TOTAL LIABILITIES",
+        "RETAINED EARNINGS",
+        "DIVIDENDS",
+        "EQUITY",
+        "TOTAL LIABILITIES AND EQUITY"
     ];
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/balance", {
+                    params: { entity: selectedCompany === "Consolidated" ? undefined : selectedCompany },
+                });
+    
+                const transformedData = categories.reduce((acc, category) => {
+                    acc[category] = Array(12).fill(0);
+                    response.data.forEach(({ category: cat, period, amount }) => {
+                        if (cat === category) {
+                            acc[category][period - 1] = amount;
+                        }
+                    });
+                    return acc;
+                }, {});
+    
+                setIncomeData(transformedData);
+            } catch (error) {
+                console.error("Error fetching income statement data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchData();
+    }, [selectedCompany]);
+    
 
     return (
-        <div className="flex flex-col justify-center p-10 min-h-screen">
-            <div className="bg-gray-800 bg-opacity-50 shadow-lg rounded-xl p-10 border border-gray-700 w-full h-full">
-                <h2 className="text-2xl font-bold text-gray-100 mb-6 text-center">
-                    Balance Sheet
+        <div className="flex flex-col justify-center pt-6 min-h-screen">
+            <div className="bg-gray-800 bg-opacity-50 shadow-lg rounded-xl p-10 border border-gray-700 w-full max-w-7xl">
+                <h2 className="text-xl font-bold text-gray-100 mb-6 text-center">
+                    {selectedCompany} Balance Statement
                 </h2>
                 <h3 className="text-lg text-gray-300 mb-8 text-center">For the Year 2024</h3>
 
-                <table className="table-fixed w-full border-collapse divide-y divide-gray-700">
-                    <thead>
-                        <tr>
-                            <th className="w-1/6 px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase border-r border-gray-700">
-                                Category
-                            </th>
-                            {months.map((month, index) => (
+                <div className="mb-6">
+                    <label htmlFor="companySelect" className="block text-gray-300 mb-2 text-sm">
+                        Select a Company:
+                    </label>
+                    <select
+                        id="companySelect"
+                        value={selectedCompany}
+                        onChange={(e) => setSelectedCompany(e.target.value)}
+                        className="bg-gray-700 text-gray-300 px-4 py-2 rounded w-full text-sm"
+                    >
+                        <option>Consolidated</option>
+                        <option value="CORVID">Corvid</option>
+                        <option value="ATEA">Atea</option>
+                        <option value="CYBER">Cyber</option>
+                        <option value="HPC">HPC</option>
+                        <option value="LYN">Lyn</option>
+                        <option value="TALON">Talon</option>
+                        <option value="TRDP">TRDP</option>
+                    </select>
+                </div>
+
+                {loading ? (
+                    <p className="text-center text-gray-300 text-sm">Loading...</p>
+                ) : (
+                    <table className="w-full table-fixed divide-y divide-gray-700 text-xs">
+                        <thead>
+                            <tr>
                                 <th
-                                    key={index}
-                                    className="w-1/12 px-6 py-4 text-center text-xs font-medium text-gray-400 uppercase border-r border-gray-700"
+                                    className="px-2 py-2 text-left font-medium text-gray-400 uppercase border-r border-gray-700"
+                                    style={{ width: "15%" }} // Set a fixed width for the "Category" column
                                 >
-                                    {month}
+                                    Category
                                 </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-700">
-                        {data.map((section, index) => (
-                            <React.Fragment key={index}>
-                                <tr
-                                    className="cursor-pointer bg-gray-700 hover:bg-gray-600"
-                                    onClick={() => toggleSection(section.category)}
-                                >
-                                    <td className="px-6 py-4 font-bold text-gray-100 flex items-center">
-                                        <span>{section.category}</span>
-                                        {section.subcategories.length > 0 && (
-                                            <ChevronDown className="ml-2 text-gray-300" />
-                                        )}
-                                    </td>
-                                    {section.values.map((value, monthIndex) => (
-                                        <td
-                                            key={monthIndex}
-                                            className="px-2 py-4 text-right font-bold text-gray-100"
-                                        >
-                                            ${value.toLocaleString()}
-                                        </td>
-                                    ))}
-                                </tr>
-                                {expandedSections[section.category] &&
-                                    section.subcategories.map((sub, subIndex) => (
-                                        <tr key={subIndex} className="bg-gray-800">
-                                            <td className="px-4 py-3 text-gray-300">
-                                                {sub.name}
-                                            </td>
-                                            {sub.values.map((value, monthIndex) => (
-                                                <td
-                                                    key={monthIndex}
-                                                    className="px-2 py-3 text-left text-gray-300"
-                                                >
-                                                    ${value.toLocaleString()}
-                                                </td>
-                                            ))}
+                                {months.map((month, index) => (
+                                    <th
+                                        key={index}
+                                        className="px-2 py-3 text-center font-medium text-gray-400 uppercase border-r border-gray-700"
+                                    >
+                                        {month}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-700">
+                            {categories.map((category) => (
+                                <>
+                                    {/* Add a bold line above specific categories */}
+                                    {["CURRENT ASSETS", "CURRENT LIABILITIES", "LONG TERM LIABILITIES", "EQUITY"].includes(category) && (
+                                        <tr key={`${category}-bold-line`}>
+                                            <td colSpan={months.length + 1} style={{ borderBottom: "4px solid white", height: "1px" }}></td>
                                         </tr>
-                                    ))}
-                            </React.Fragment>
-                        ))}
-                    </tbody>
-                </table>
+                                    )}
+                                    <tr
+                                        key={category}
+                                        className={
+                                            ["TOTAL ASSETS", "TOTAL LIABILITIES", "EQUITY", "TOTAL LIABILITIES AND EQUITY"].includes(category)
+                                                ? "bg-gray-400 text-gray-900 font-extrabold" // Highlighted row styling
+                                                : ["CURRENT ASSETS", "NET FIXED ASSETS", "DEPOSITS", "CURRENT LIABILITIES", "LONG TERM LIABILITIES"].includes(category)
+                                                ? "font-extrabold text-gray-100"
+                                                : "font-semibold text-gray-300"
+                                        }
+                                    >
+                                        <td
+                                            className="py-4 px-2 text-left"
+                                            style={{
+                                                wordWrap: "break-word",
+                                                whiteSpace: "normal",
+                                                width: "15%",
+                                                border: "none",
+                                            }}
+                                        >
+                                            {category}
+                                        </td>
+                                        {incomeData[category]?.map((amount, index) => (
+                                            <td
+                                                key={index}
+                                                className="px-2 py-2 text-left"
+                                                style={{
+                                                    border: "none",
+                                                    fontWeight: ["TOTAL ASSETS", "TOTAL LIABILITIES", "EQUITY", "TOTAL LIABILITIES AND EQUITY"].includes(category)
+                                                        ? "800"
+                                                        : "normal",
+                                                }}
+                                            >
+                                                ${amount.toLocaleString() || "0"}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                    {/* Add a blank row after specific categories */}
+                                    {[
+                                        "CURRENT ASSETS",
+                                        "NET FIXED ASSETS",
+                                        "DEPOSITS",
+                                        "TOTAL ASSETS",
+                                        "CURRENT LIABILITIES",
+                                        "LONG TERM LIABILITIES",
+                                        "TOTAL LIABILITIES",
+                                        "EQUITY",
+                                    ].includes(category) && (
+                                        <tr key={`${category}-blank`}>
+                                            <td colSpan={months.length + 1} style={{ height: "40px", border: "none" }}></td>
+                                        </tr>
+                                    )}
+                                </>
+                            ))}
+                        </tbody>
+
+
+                    </table>
+                )}
             </div>
         </div>
     );
 };
 
 export default ConsolidatedBSTable;
-
-

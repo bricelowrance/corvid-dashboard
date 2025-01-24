@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const ConsolidatedISTable = () => {
-    const [selectedCompany, setSelectedCompany] = useState("CORVID");
+    const [selectedCompany, setSelectedCompany] = useState("Consolidated");
     const [incomeData, setIncomeData] = useState({});
     const [loading, setLoading] = useState(true);
 
@@ -36,7 +36,7 @@ const ConsolidatedISTable = () => {
         const fetchData = async () => {
             try {
                 const response = await axios.get("http://localhost:5000/income", {
-                    params: { entity: selectedCompany === "All" ? undefined : selectedCompany },
+                    params: { entity: selectedCompany === "Consolidated" ? undefined : selectedCompany },
                 });
     
                 const transformedData = categories.reduce((acc, category) => {
@@ -62,7 +62,7 @@ const ConsolidatedISTable = () => {
     
 
     return (
-        <div className="flex flex-col justify-center p-0 min-h-screen">
+        <div className="flex flex-col pt-6 min-h-screen">
             <div className="bg-gray-800 bg-opacity-50 shadow-lg rounded-xl p-10 border border-gray-700 w-full max-w-7xl">
                 <h2 className="text-xl font-bold text-gray-100 mb-6 text-center">
                     {selectedCompany} Income Statement
@@ -79,7 +79,7 @@ const ConsolidatedISTable = () => {
                         onChange={(e) => setSelectedCompany(e.target.value)}
                         className="bg-gray-700 text-gray-300 px-4 py-2 rounded w-full text-sm"
                     >
-                        <option>All</option>
+                        <option>Consolidated</option>
                         <option value="CORVID">Corvid</option>
                         <option value="ATEA">Atea</option>
                         <option value="CYBER">Cyber</option>

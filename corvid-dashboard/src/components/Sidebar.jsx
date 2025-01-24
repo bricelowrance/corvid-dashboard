@@ -7,6 +7,8 @@ const SIDEBAR_ITEMS = [
     { name:"Income Statement", icon:BarChart2, color:"white", href:"/",
      },
     { name:"Balance Sheet", icon:BarChart2, color:"white", href:"/bs",
+     },
+     { name:"Statement of Cash Flow", icon:BarChart2, color:"white", href:"/cf",
      }
 ]
 const Sidebar = () => {
