@@ -5,27 +5,6 @@ import OverviewPage from "./pages/OverviewPage";
 import BPage from "./pages/BPage";
 import BSPage from "./pages/BSPage";
 import CFPage from "./pages/CFPage";
-import AteaBSPage from "./pages/atea/AteaBSPage";
-import AteaISPage from "./pages/atea/AteaISPage";
-import AteaTPage from "./pages/atea/AteaTPage";
-import CorvidBSPage from "./pages/corvidtec/CorvidBSPage";
-import CorvidISPage from "./pages/corvidtec/CorvidISPage";
-import CorvidTPage from "./pages/corvidtec/CorvidTPage";
-import CyberBSPage from "./pages/cyber/CyberBSPage";
-import CyberISPage from "./pages/cyber/CyberISPage";
-import CyberTPage from "./pages/cyber/CyberTPage";
-import HpcBSPage from "./pages/hpc/HpcBSPage";
-import HpcISPage from "./pages/hpc/HpcISPage";
-import HpcTPage from "./pages/hpc/HpcTPage";
-import LynBSPage from "./pages/lyn/LynBSPage";
-import LynISPage from "./pages/lyn/LynISPage";
-import LynTPage from "./pages/lyn/LynTPage";
-import TalonBSPage from "./pages/talon/TalonBSPage";
-import TalonISPage from "./pages/talon/TalonISPage";
-import TalonTPage from "./pages/talon/TalonTPage";
-import TrdpBSPage from "./pages/trdp/TrdpBSPage";
-import TrdpISPage from "./pages/trdp/TrdpIsPage";
-import TrdpTPage from "./pages/trdp/TrdpTPage";
 import LoginPage from "./pages/LoginPage";
 
 function App() {
@@ -56,27 +35,6 @@ function App() {
                         <Route path="/b" element={<BPage />} />
                         <Route path="/bs" element={<BSPage />} />
                         <Route path="/cf" element={<CFPage />} />
-                        <Route path="/ateabs" element={<AteaBSPage />} />
-                        <Route path="/ateais" element={<AteaISPage />} />
-                        <Route path="/ateat" element={<AteaTPage />} />
-                        <Route path="/corvidbs" element={<CorvidBSPage />} />
-                        <Route path="/corvidis" element={<CorvidISPage />} />
-                        <Route path="/corvidt" element={<CorvidTPage />} />
-                        <Route path="/cyberbs" element={<CyberBSPage />} />
-                        <Route path="/cyberis" element={<CyberISPage />} />
-                        <Route path="/cybert" element={<CyberTPage />} />
-                        <Route path="/hpcbs" element={<HpcBSPage />} />
-                        <Route path="/hpcis" element={<HpcISPage />} />
-                        <Route path="/hpct" element={<HpcTPage />} />
-                        <Route path="/lynbs" element={<LynBSPage />} />
-                        <Route path="/lynis" element={<LynISPage />} />
-                        <Route path="/lynt" element={<LynTPage />} />
-                        <Route path="/talonbs" element={<TalonBSPage />} />
-                        <Route path="/talonis" element={<TalonISPage />} />
-                        <Route path="/talont" element={<TalonTPage />} />
-                        <Route path="/trdpbs" element={<TrdpBSPage />} />
-                        <Route path="/trdpis" element={<TrdpISPage />} />
-                        <Route path="/trdpt" element={<TrdpTPage />} />
                     </>
                 ) : (
                     <Route path="*" element={<Navigate to="/login" />} />
