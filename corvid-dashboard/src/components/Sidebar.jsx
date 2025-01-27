@@ -4,11 +4,11 @@ import { AnimatePresence, motion } from "framer-motion"
 import { Link } from "react-router-dom"
 
 const SIDEBAR_ITEMS = [
-    { name:"Income Statement", icon:BarChart2, color:"white", href:"/",
+    { name:"Income Statement", icon:BarChart2, color:"#23356b", href:"/",
      },
-    { name:"Balance Sheet", icon:BarChart2, color:"white", href:"/bs",
+    { name:"Balance Sheet", icon:BarChart2, color:"#23356b", href:"/bs",
      },
-     { name:"Statement of Cash Flow", icon:BarChart2, color:"white", href:"/cf",
+     { name:"Statement of Cash Flow", icon:BarChart2, color:"#23356b", href:"/cf",
      }
 ]
 const Sidebar = () => {
@@ -29,22 +29,22 @@ const Sidebar = () => {
             animate={{ width: isSidebarOpen ? 256 : 80 }}
         >
             <div
-                className="h-screen bg-corvi bg-opacity-50 backdrop-blur-md flex flex-col border-r border-gray-700"
+                className="h-screen bg-white bg-opacity-100 backdrop-blur-md flex flex-col border-r border-gray-700"
             >
 
 <               motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="p-2 rounded-full hover:bg-gray-700 transition-colors max-w-fit m-4"
+                    className="p-2 rounded-full hover:bg-gray-300 transition-colors max-w-fit m-4"
                 >
-                    <Menu size={24} />
+                    <Menu size={24} color={"#23356b"} />
                 </motion.button>
                 
                 {/* Logo Section */}
                 <div className="p-4 flex items-center justify-center">
                     <img
-                        src="/CorvidLogo_White.png"
+                        src="/CorvidLogo_Blue.png"
                         alt="Logo"
                         className={`transition-all duration-300 ${
                         isSidebarOpen ? "w-32" : "w-10"
@@ -69,8 +69,8 @@ const Sidebar = () => {
                             exit={{ opacity: 0, y: -10 }}
                             className="text-center mt-3"
                         >
-                            <p className="text-white text-lg font-semibold">David Robinson</p>
-                            <p className="text-gray-400 text-sm">Admin</p>
+                            <p className="text-corvid-blue text-lg font-semibold">David Robinson</p>
+                            <p className="text-corvid-blue opacity-60 text-sm">Admin</p>
                         </motion.div>
                         )}
                     </AnimatePresence>
@@ -86,7 +86,7 @@ const Sidebar = () => {
                                         <div
                                             className={`flex items-center ${
                                                 isSidebarOpen ? "justify-between" : "justify-center"
-                                            } p-4 text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors cursor-pointer`}
+                                            } p-4 text-sm text-corvid-blue font-medium rounded-lg hover:bg-gray-300 transition-colors cursor-pointer`}
                                         >
                                             <div className="flex items-center">
                                                 <item.icon
@@ -112,7 +112,7 @@ const Sidebar = () => {
                                     <div
                                         className={`flex items-center ${
                                             isSidebarOpen ? "justify-between" : "justify-center"
-                                        } p-4 text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors cursor-pointer`}
+                                        } p-4 text-sm font-medium rounded-lg hover:bg-gray-300 transition-colors cursor-pointer`}
                                         onClick={() => item.children && toggleDropdown(index)}
                                     >
                                         <div className="flex items-center">

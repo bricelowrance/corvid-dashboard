@@ -79,21 +79,21 @@ const ConsolidatedBSTable = () => {
 
     return (
         <div className="flex flex-col justify-center pt-6 min-h-screen">
-            <div className="bg-gray-800 bg-opacity-50 shadow-lg rounded-xl p-10 border border-gray-700 w-full max-w-7xl">
-                <h2 className="text-xl font-bold text-gray-100 mb-6 text-center">
+            <div className="bg-white bg-opacity-100 shadow-lg rounded-xl p-10 border border-gray-700 w-full max-w-7xl">
+                <h2 className="text-xl font-extrabold text-corvid-blue mb-6 text-center">
                     {selectedCompany} Balance Statement
                 </h2>
-                <h3 className="text-lg text-gray-300 mb-8 text-center">For the Year 2024</h3>
+                <h3 className="text-lg text-corvid-blue font-bold mb-8 text-center">For the Year 2024</h3>
 
                 <div className="mb-6">
-                    <label htmlFor="companySelect" className="block text-gray-300 mb-2 text-sm">
+                    <label htmlFor="companySelect" className="block text-corvid-blue font-semibold mb-2 text-sm">
                         Select a Company:
                     </label>
                     <select
                         id="companySelect"
                         value={selectedCompany}
                         onChange={(e) => setSelectedCompany(e.target.value)}
-                        className="bg-gray-700 text-gray-300 px-4 py-2 rounded w-full text-sm"
+                        className="bg-gray-200 text-corvid-blue px-4 py-2 rounded w-full text-sm"
                     >
                         <option>Consolidated</option>
                         <option value="CORVID">Corvid</option>
@@ -107,44 +107,43 @@ const ConsolidatedBSTable = () => {
                 </div>
 
                 {loading ? (
-                    <p className="text-center text-gray-300 text-sm">Loading...</p>
+                    <p className="text-center text-corvid-blue text-sm">Loading...</p>
                 ) : (
                     <table className="w-full table-fixed divide-y divide-gray-700 text-xs">
                         <thead>
                             <tr>
                                 <th
-                                    className="px-2 py-2 text-left font-medium text-gray-400 uppercase border-r border-gray-700"
-                                    style={{ width: "15%" }} // Set a fixed width for the "Category" column
+                                    className="px-2 py-2 text-left font-bold text-corvid-blue uppercase border-r border-gray-700"
+                                    style={{ width: "15%" }} 
                                 >
                                     Category
                                 </th>
                                 {months.map((month, index) => (
                                     <th
                                         key={index}
-                                        className="px-2 py-3 text-center font-medium text-gray-400 uppercase border-r border-gray-700"
+                                        className="px-2 py-3 text-center font-bold text-corvid-blue uppercase border-gray-700"
                                     >
                                         {month}
                                     </th>
                                 ))}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-700">
+                        <tbody className=" divide-gray-700">
                             {categories.map((category) => (
                                 <>
-                                    {/* Add a bold line above specific categories */}
-                                    {["CURRENT ASSETS", "CURRENT LIABILITIES", "LONG TERM LIABILITIES", "EQUITY"].includes(category) && (
+                                    {["CURRENT ASSETS", "TOTAL ASSETS", "CURRENT LIABILITIES", "LONG TERM LIABILITIES", "TOTAL LIABILITIES", "EQUITY", "TOTAL LIABILITIES AND EQUITY"].includes(category) && (
                                         <tr key={`${category}-bold-line`}>
-                                            <td colSpan={months.length + 1} style={{ borderBottom: "4px solid white", height: "1px" }}></td>
+                                            <td colSpan={months.length + 1} style={{ borderBottom: "4px solid #23356b", height: "1px" }}></td>
                                         </tr>
                                     )}
                                     <tr
                                         key={category}
                                         className={
                                             ["TOTAL ASSETS", "TOTAL LIABILITIES", "EQUITY", "TOTAL LIABILITIES AND EQUITY"].includes(category)
-                                                ? "bg-gray-400 text-gray-900 font-extrabold" // Highlighted row styling
+                                                ? "bg-gray-300 text-corvid-blue font-extrabold"
                                                 : ["CURRENT ASSETS", "NET FIXED ASSETS", "DEPOSITS", "CURRENT LIABILITIES", "LONG TERM LIABILITIES"].includes(category)
-                                                ? "font-extrabold text-gray-100"
-                                                : "font-semibold text-gray-300"
+                                                ? "font-extrabold text-corvid-blue"
+                                                : "font-bold text-corvid-blue"
                                         }
                                     >
                                         <td
@@ -161,7 +160,7 @@ const ConsolidatedBSTable = () => {
                                         {incomeData[category]?.map((amount, index) => (
                                             <td
                                                 key={index}
-                                                className="px-2 py-2 text-left"
+                                                className="px-4 py-2 text-left"
                                                 style={{
                                                     border: "none",
                                                     fontWeight: ["TOTAL ASSETS", "TOTAL LIABILITIES", "EQUITY", "TOTAL LIABILITIES AND EQUITY"].includes(category)
@@ -169,11 +168,11 @@ const ConsolidatedBSTable = () => {
                                                         : "normal",
                                                 }}
                                             >
-                                                ${amount.toLocaleString() || "0"}
+                                                {amount.toLocaleString() || "0"}
                                             </td>
                                         ))}
                                     </tr>
-                                    {/* Add a blank row after specific categories */}
+                                
                                     {[
                                         "CURRENT ASSETS",
                                         "NET FIXED ASSETS",
@@ -185,7 +184,7 @@ const ConsolidatedBSTable = () => {
                                         "EQUITY",
                                     ].includes(category) && (
                                         <tr key={`${category}-blank`}>
-                                            <td colSpan={months.length + 1} style={{ height: "40px", border: "none" }}></td>
+                                            <td colSpan={months.length + 1} style={{ height: "20px", border: "none" }}></td>
                                         </tr>
                                     )}
                                 </>
