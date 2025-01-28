@@ -147,6 +147,43 @@ app.get("/balance", async (req, res) => {
     }
 });
 
+app.get("/net_income", async (req, res) => {
+    try {
+        const { entity, period } = req.query;
+
+        let query = `
+            SELECT period, SUM(amount) AS amount
+            FROM financial_data.consolidated_income
+            WHERE category = 'NET INCOME'
+        `;
+        const values = [];
+
+        if (entity && entity !== "Consolidated") {
+            query += ` AND entity = $1`;
+            values.push(entity);
+        }
+
+        if (period) {
+            query += ` AND period = $${values.length + 1}`;
+            values.push(period);
+        }
+
+        query += ` GROUP BY period ORDER BY period`;
+
+        const result = await pool.query(query, values);
+
+        const netIncomeData = result.rows.map(({ period, amount }) => ({
+            period,
+            amount: parseFloat(amount),
+        }));
+
+        res.json(netIncomeData);
+    } catch (err) {
+        console.error("Error fetching Net Income data:", err.message);
+        res.status(500).send("Server Error");
+    }
+});
+
 app.get("/subcategories", async (req, res) => {
     try {
         const { entity } = req.query;
@@ -179,7 +216,6 @@ app.get("/subcategories", async (req, res) => {
         res.status(500).send("Server Error");
     }
 });
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

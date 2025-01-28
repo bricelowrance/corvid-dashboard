@@ -129,7 +129,7 @@ const ConsolidatedISTable = () => {
                                         {incomeData[category]?.map((amount, index) => (
                                             <td
                                                 key={index}
-                                                className="px-2 py-2 text-left font-semibold text-corvid-blue border-gray-700"
+                                                className="px-4 py-2 text-left font-semibold text-corvid-blue border-gray-700"
                                             >
                                                 {amount.toLocaleString() || "0"}
                                             </td>

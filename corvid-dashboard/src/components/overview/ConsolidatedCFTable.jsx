@@ -6,6 +6,7 @@ const ConsolidatedCFTable = () => {
     const [selectedMonth, setSelectedMonth] = useState(0); // Default to the first month (index-based)
     const [balanceSheetData, setBalanceSheetData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [netIncome, setNetIncome] = useState("-");
 
     const months = [
         "Jan 2024",
@@ -22,8 +23,26 @@ const ConsolidatedCFTable = () => {
         "Dec 2024",
     ];
 
+    const categoryOrder = [
+        "NET INCOME",
+        "OPERATING ACTIVITIES",
+        "ACCOUNTS RECEIVABLE",
+        "UNBILLED RECEIVABLE",
+        "OTHER CURRENT ASSETS",
+        "ACCOUNTS PAYABLE",
+        "PAYROLL LIABILITIES",
+        "ACCRUED EXPENSES",
+        "DEFERRED REVENUE",
+        "OTHER CURRENT LIABILITIES",
+        "DEPOSITS",
+        "INVESTING ACTIVITIES",
+        "NET FIXED ASSETS",
+        "FINANCING ACTIVITIES",
+        "CASH",
+    ];
+
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchBalanceSheetData = async () => {
             try {
                 const response = await axios.get("http://localhost:5000/balance", {
                     params: { entity: selectedCompany === "Consolidated" ? undefined : selectedCompany },
@@ -43,8 +62,25 @@ const ConsolidatedCFTable = () => {
             }
         };
 
-        fetchData();
-    }, [selectedCompany]);
+        const fetchNetIncome = async () => {
+            try {
+                const response = await axios.get("http://localhost:5000/net_income", {
+                    params: {
+                        entity: selectedCompany === "Consolidated" ? undefined : selectedCompany,
+                        period: selectedMonth + 1, 
+                    },
+                });
+
+                setNetIncome(response.data.length > 0 ? response.data[0].amount.toLocaleString() : "-");
+            } catch (error) {
+                console.error("Error fetching Net Income data:", error);
+            }
+        };
+
+        setLoading(true);
+        fetchBalanceSheetData();
+        fetchNetIncome();
+    }, [selectedCompany, selectedMonth]);
 
     const calculateCashFlow = (category) => {
         if (!balanceSheetData[category]) return "-";
@@ -53,21 +89,35 @@ const ConsolidatedCFTable = () => {
         return (currentMonthValue - previousMonthValue).toLocaleString();
     };
 
+    const filteredAndOrderedData = categoryOrder.map((category) => {
+        if (category === "NET INCOME") {
+            return { name: category, amount: netIncome, isHeader: false };
+        }
+        if (["OPERATING ACTIVITIES", "INVESTING ACTIVITIES", "FINANCING ACTIVITIES"].includes(category)) {
+            return { name: category, amount: "", isHeader: true };
+        }
+        return {
+            name: category,
+            amount: calculateCashFlow(category),
+            isHeader: false,
+        };
+    });
+
     return (
         <div className="flex flex-col justify-center pt-6 min-h-screen">
-            <div className="bg-gray-800 bg-opacity-50 shadow-lg rounded-xl p-10 border border-gray-700 w-full max-w-7xl">
-                <h2 className="text-xl font-bold text-gray-100 mb-6 text-center">
+            <div className="bg-white bg-opacity-100 shadow-lg rounded-xl p-10 border border-gray-700 w-full max-w-7xl">
+                <h2 className="text-xl font-bold text-corvid-blue mb-6 text-center">
                     {selectedCompany} Statement of Cash Flows
                 </h2>
                 <div className="mb-6">
-                    <label htmlFor="companySelect" className="block text-gray-300 mb-2 text-sm">
+                    <label htmlFor="companySelect" className="block text-corvid-blue mb-2 text-sm">
                         Select a Company:
                     </label>
                     <select
                         id="companySelect"
                         value={selectedCompany}
                         onChange={(e) => setSelectedCompany(e.target.value)}
-                        className="bg-gray-700 text-gray-300 px-4 py-2 rounded w-full text-sm"
+                        className="bg-gray-200 text-corvid-blue px-4 py-2 rounded w-full text-sm"
                     >
                         <option>Consolidated</option>
                         <option value="CORVID">Corvid</option>
@@ -81,14 +131,14 @@ const ConsolidatedCFTable = () => {
                 </div>
 
                 <div className="mb-6">
-                    <label htmlFor="monthSelect" className="block text-gray-300 mb-2 text-sm">
+                    <label htmlFor="monthSelect" className="block text-corvid-blue mb-2 text-sm">
                         Select a Month:
                     </label>
                     <select
                         id="monthSelect"
                         value={selectedMonth}
                         onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                        className="bg-gray-700 text-gray-300 px-4 py-2 rounded w-full text-sm"
+                        className="bg-gray-200 text-corvid-blue px-4 py-2 rounded w-full text-sm"
                     >
                         {months.map((month, index) => (
                             <option key={index} value={index}>
@@ -99,41 +149,33 @@ const ConsolidatedCFTable = () => {
                 </div>
 
                 {loading ? (
-                    <p className="text-center text-gray-300 text-sm">Loading...</p>
+                    <p className="text-center text-corvid-blue text-sm">Loading...</p>
                 ) : (
                     <table className="w-full table-fixed divide-y divide-gray-700 text-xs">
                         <thead>
                             <tr>
                                 <th
-                                    className="px-6 py-2 text-right font-medium text-gray-400 uppercase border-r border-gray-700"
+                                    className="px-6 py-2 text-right font-bold text-corvid-blue uppercase border-gray-700"
                                     style={{ width: "50%" }}
                                 >
                                     Category
                                 </th>
                                 <th
-                                    className="px-6 py-2 text-left font-medium text-gray-400 uppercase border-r border-gray-700"
+                                    className="px-6 py-2 text-left font-bold text-corvid-blue uppercase border-gray-700"
                                     style={{ width: "50%" }}
                                 >
                                     Amount
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-700">
-                            {Object.keys(balanceSheetData).map((category, index) => (
+                        <tbody className="divide-gray-700">
+                            {filteredAndOrderedData.map(({ name, amount, isHeader }, index) => (
                                 <tr
                                     key={index}
-                                    className={
-                                        ["Net Income", "Operating Activities", "Investing Activities", "Financing Activities", "Net Increase in Cash"].includes(category)
-                                            ? "bg-gray-400 text-gray-900 font-extrabold"
-                                            : "font-semibold text-gray-300"
-                                    }
+                                    className={isHeader ? "text-corvid-blue font-extrabold" : "font-semibold text-corvid-blue"}
                                 >
-                                    <td className="py-4 px-6 text-right">
-                                        {category}
-                                    </td>
-                                    <td className="py-4 px-6 text-left">
-                                        {calculateCashFlow(category)}
-                                    </td>
+                                    <td className="py-4 px-6 text-right">{name}</td>
+                                    <td className="py-4 px-6 text-left">{amount}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -145,3 +187,4 @@ const ConsolidatedCFTable = () => {
 };
 
 export default ConsolidatedCFTable;
+

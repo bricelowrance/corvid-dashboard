@@ -140,7 +140,7 @@ const ConsolidatedBSTable = () => {
                                         key={category}
                                         className={
                                             ["TOTAL ASSETS", "TOTAL LIABILITIES", "EQUITY", "TOTAL LIABILITIES AND EQUITY"].includes(category)
-                                                ? "bg-gray-300 text-corvid-blue font-extrabold"
+                                                ? "bg-gray-200 text-corvid-blue font-extrabold"
                                                 : ["CURRENT ASSETS", "NET FIXED ASSETS", "DEPOSITS", "CURRENT LIABILITIES", "LONG TERM LIABILITIES"].includes(category)
                                                 ? "font-extrabold text-corvid-blue"
                                                 : "font-bold text-corvid-blue"

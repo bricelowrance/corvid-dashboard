@@ -39,21 +39,21 @@ const LoginPage = ({ onLoginSuccess }) => {
 
     return (
         <div className="flex-1 overflow-auto relative z-10">
-            <div className="flex items-center justify-center min-h-screen bg-gray-900">
+            <div className="flex items-center justify-center min-h-screen bg-corvid-blue">
                 <motion.div
-                    className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-8 border border-gray-700 w-[600px]"
+                    className="bg-white bg-opacity-100 backdrop-blur-md shadow-lg rounded-xl p-8 border border-gray-700 w-[600px]"
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3 }}
                 >
                     <div className="flex justify-center items-center">
                         <img
-                            src="/CorvidLogo_White.png"
+                            src="/CorvidLogo_Blue.png"
                             alt="Logo"
                             className="h-20 w-auto mb-6"
                         />
                     </div>
-                    <h2 className="text-3xl font-medium text-gray-100 mb-6 text-center">
+                    <h2 className="text-3xl font-medium text-corvid-blue mb-6 text-center">
                         Login
                     </h2>
                     {errorMessage && (
@@ -65,14 +65,14 @@ const LoginPage = ({ onLoginSuccess }) => {
                         <div>
                             <label
                                 htmlFor="username"
-                                className="block text-gray-300 text-sm font-medium mb-1"
+                                className="block text-corvid-blue text-sm font-medium mb-1"
                             >
                                 Username
                             </label>
                             <input
                                 id="username"
                                 type="text"
-                                className="w-full bg-gray-700 text-gray-300 rounded p-3 border border-gray-600 focus:ring-2 focus:ring-purple-500"
+                                className="w-full bg-gray-700 text-gray-300 rounded p-3 border border-gray-600 focus:ring-2 focus:ring-gray-500"
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 required
@@ -81,14 +81,14 @@ const LoginPage = ({ onLoginSuccess }) => {
                         <div>
                             <label
                                 htmlFor="password"
-                                className="block text-gray-300 text-sm font-medium mb-1"
+                                className="block text-corvid-blue text-sm font-medium mb-1"
                             >
                                 Password
                             </label>
                             <input
                                 id="password"
                                 type="password"
-                                className="w-full bg-gray-700 text-gray-300 rounded p-3 border border-gray-600 focus:ring-2 focus:ring-purple-500"
+                                className="w-full bg-gray-700 text-gray-300 rounded p-3 border border-gray-600 focus:ring-2 focus:ring-gray-500"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
@@ -96,7 +96,7 @@ const LoginPage = ({ onLoginSuccess }) => {
                         </div>
                         <button
                             type="submit"
-                            className="w-full bg-gray-700 text-white font-medium rounded p-3 hover:bg-gray-400 transition duration-150"
+                            className="w-full bg-gray-200 text-corvid-blue font-medium rounded p-3 hover:bg-gray-300 transition duration-150"
                             disabled={isLoading}
                         >
                             {isLoading ? "Logging in..." : "Login"}
