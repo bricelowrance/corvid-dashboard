@@ -3,7 +3,7 @@ import axios from "axios";
 
 const ConsolidatedCFTable = () => {
     const [selectedCompany, setSelectedCompany] = useState("Consolidated");
-    const [selectedMonth, setSelectedMonth] = useState(0); // Default to the first month (index-based)
+    const [selectedMonth, setSelectedMonth] = useState(0);
     const [balanceSheetData, setBalanceSheetData] = useState({});
     const [loading, setLoading] = useState(true);
     const [netIncome, setNetIncome] = useState("-");
@@ -38,8 +38,17 @@ const ConsolidatedCFTable = () => {
         "INVESTING ACTIVITIES",
         "NET FIXED ASSETS",
         "FINANCING ACTIVITIES",
+        "LONG TERM LIABILITIES",
+        "DIVIDENDS",
         "CASH",
     ];
+
+    const categoryDisplayNames = {
+        "NET FIXED ASSETS": "PURCHASES OF FIXED ASSETS",
+        "LONG TERM LIABILITIES": "PRINCIPLE PAYMENTS ON LOANS",
+        "DIVIDENDS": "DISTRIBUTIONS",
+        "CASH": "INCREASE IN CASH",
+    };
 
     useEffect(() => {
         const fetchBalanceSheetData = async () => {
@@ -64,16 +73,21 @@ const ConsolidatedCFTable = () => {
 
         const fetchNetIncome = async () => {
             try {
+                console.log("Fetching Net Income for:", selectedCompany, "Month:", selectedMonth + 1);
+        
                 const response = await axios.get("http://localhost:5000/net_income", {
                     params: {
                         entity: selectedCompany === "Consolidated" ? undefined : selectedCompany,
-                        period: selectedMonth + 1, 
+                        period: selectedMonth + 1,
                     },
                 });
-
-                setNetIncome(response.data.length > 0 ? response.data[0].amount.toLocaleString() : "-");
+        
+                console.log("Net Income Response:", response.data);
+        
+                setNetIncome(response.data.length > 0 ? response.data[0].amount.toLocaleString() : "No data available");
             } catch (error) {
-                console.error("Error fetching Net Income data:", error);
+                console.error("Error fetching Net Income:", error.response ? error.response.data : error.message);
+                setNetIncome("Error");
             }
         };
 
@@ -90,14 +104,15 @@ const ConsolidatedCFTable = () => {
     };
 
     const filteredAndOrderedData = categoryOrder.map((category) => {
+        const displayName = categoryDisplayNames[category] || category; // Use mapped name if it exists
         if (category === "NET INCOME") {
-            return { name: category, amount: netIncome, isHeader: false };
+            return { name: displayName, amount: netIncome, isHeader: false };
         }
         if (["OPERATING ACTIVITIES", "INVESTING ACTIVITIES", "FINANCING ACTIVITIES"].includes(category)) {
-            return { name: category, amount: "", isHeader: true };
+            return { name: displayName, amount: "", isHeader: true };
         }
         return {
-            name: category,
+            name: displayName,
             amount: calculateCashFlow(category),
             isHeader: false,
         };

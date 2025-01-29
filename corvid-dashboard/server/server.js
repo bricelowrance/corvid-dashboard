@@ -151,10 +151,12 @@ app.get("/net_income", async (req, res) => {
     try {
         const { entity, period } = req.query;
 
+        console.log("Fetching Net Income with params:", { entity, period });
+
         let query = `
             SELECT period, SUM(amount) AS amount
             FROM financial_data.consolidated_income
-            WHERE category = 'NET INCOME'
+            WHERE UPPER(category) = 'NET INCOME'
         `;
         const values = [];
 
@@ -170,50 +172,45 @@ app.get("/net_income", async (req, res) => {
 
         query += ` GROUP BY period ORDER BY period`;
 
+        console.log("Constructed Query:", query);
+        console.log("Query Values:", values);
+
         const result = await pool.query(query, values);
 
-        const netIncomeData = result.rows.map(({ period, amount }) => ({
+        console.log("Query Result:", result.rows);
+
+        res.json(result.rows.map(({ period, amount }) => ({
             period,
             amount: parseFloat(amount),
-        }));
-
-        res.json(netIncomeData);
+        })));
     } catch (err) {
         console.error("Error fetching Net Income data:", err.message);
-        res.status(500).send("Server Error");
+        res.status(500).json({ error: err.message });
     }
 });
 
-app.get("/subcategories", async (req, res) => {
+app.get("/financial-summary", async (req, res) => {
     try {
-        const { entity } = req.query;
+        const { year, period, entity } = req.query;
 
-        let query = `
-            SELECT category, subcategory, period, SUM(amount) AS amount
-            FROM financial_data.consolidated_b
-        `;
-        const values = [];
-
-        if (entity && entity !== "Consolidated") {
-            query += ` WHERE entity = $1`;
-            values.push(entity);
+        if (!year || !period || !entity) {
+            return res.status(400).json({ error: "Year, period, and entity are required parameters" });
         }
 
-        query += ` GROUP BY category, subcategory, period ORDER BY category, subcategory, period`;
+        const query = `
+            SELECT category, subcategory, SUM(amount) AS total_amount
+            FROM financial_data.balance_sheets
+            WHERE year = $1 AND period = $2 AND entity = $3
+            GROUP BY category, subcategory
+            ORDER BY category, subcategory
+        `;
+        const values = [year, period, entity];
 
         const result = await pool.query(query, values);
-
-        const subcategoryData = result.rows.map(({ category, subcategory, period, amount }) => ({
-            category,
-            subcategory,
-            period,
-            amount: parseFloat(amount),
-        }));
-
-        res.json(subcategoryData);
+        res.json(result.rows);
     } catch (err) {
-        console.error("Error fetching subcategories data:", err.message);
-        res.status(500).send("Server Error");
+        console.error("Error fetching financial summary:", err.message);
+        res.status(500).json({ error: "Server error" });
     }
 });
 
