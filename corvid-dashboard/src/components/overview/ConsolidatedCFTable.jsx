@@ -104,7 +104,7 @@ const ConsolidatedCFTable = () => {
     };
 
     const filteredAndOrderedData = categoryOrder.map((category) => {
-        const displayName = categoryDisplayNames[category] || category; // Use mapped name if it exists
+        const displayName = categoryDisplayNames[category] || category; 
         if (category === "NET INCOME") {
             return { name: displayName, amount: netIncome, isHeader: false };
         }

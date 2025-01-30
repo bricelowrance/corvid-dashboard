@@ -26,8 +26,8 @@ const LoginPage = ({ onLoginSuccess }) => {
             if (!response.ok) {
                 setErrorMessage(data.error || "Login failed");
             } else {
-                localStorage.setItem("token", data.token); // Save the token
-                onLoginSuccess(); // Trigger callback to refresh the UI or navigate
+                localStorage.setItem("token", data.token); 
+                onLoginSuccess(); 
             }
         } catch (error) {
             console.error("Error logging in:", error);

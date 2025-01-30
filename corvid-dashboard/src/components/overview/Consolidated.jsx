@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
 import axios from "axios";
 
 const Consolidated = () => {
@@ -8,6 +9,8 @@ const Consolidated = () => {
     const [financialData, setFinancialData] = useState([]);
     const [expandedCategories, setExpandedCategories] = useState({});
     const [loading, setLoading] = useState(true);
+
+    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
     useEffect(() => {
         const fetchData = async () => {
@@ -56,17 +59,17 @@ const Consolidated = () => {
 
                     <div>
                         <label className="block text-corvid-blue font-semibold mb-2 text-sm">Select Month:</label>
-                        <select
-                            value={period}
-                            onChange={(e) => setPeriod(e.target.value)}
-                            className="bg-gray-200 text-corvid-blue px-4 py-2 rounded text-sm"
-                        >
-                            {[...Array(12).keys()].map((i) => (
-                                <option key={i + 1} value={i + 1}>
-                                    {`Period ${i + 1}`}
-                                </option>
-                            ))}
-                        </select>
+                            <select
+                                value={period}
+                                onChange={(e) => setPeriod(e.target.value)}
+                                className="bg-gray-200 text-corvid-blue px-4 py-2 rounded text-sm"
+                            >
+                                {months.map((month, index) => (
+                                    <option key={index + 1} value={index + 1}>
+                                        {month}
+                                    </option>
+                                ))}
+                            </select>
                     </div>
 
                     <div>
@@ -76,12 +79,12 @@ const Consolidated = () => {
                             onChange={(e) => setEntity(e.target.value)}
                             className="bg-gray-200 text-corvid-blue px-4 py-2 rounded text-sm"
                         >
-                            <option value="CORVID">Corvid</option>
-                            <option value="ATEA">Atea</option>
-                            <option value="CYBER">Cyber</option>
+                            <option value="CORVID">CORVID</option>
+                            <option value="ATEA">ATEA</option>
+                            <option value="CYBER">CYBER</option>
                             <option value="HPC">HPC</option>
-                            <option value="LYN">Lyn</option>
-                            <option value="TALON">Talon</option>
+                            <option value="LYN">LYN</option>
+                            <option value="TALON">TALON</option>
                             <option value="TRDP">TRDP</option>
                         </select>
                     </div>
@@ -98,35 +101,39 @@ const Consolidated = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {financialData.reduce((acc, { category, subcategory, total_amount }) => {
-                                const formattedAmount = total_amount.toLocaleString();
+                            {financialData.reduce((acc, { category, subcategory, total_amount }, index) => {
+                                const amount = Number(total_amount) || 0;
+                                const formattedAmount = amount.toLocaleString("en-US", {
+                                });
 
-                                if (!acc.categories.includes(category)) {
-                                    acc.categories.push(category);
+                                if (!acc.categories.has(category)) {
+                                    acc.categories.add(category);
                                     acc.rows.push(
-                                        <tr key={category} className="bg-gray-200 text-corvid-blue font-bold">
-                                            <td
-                                                className="px-4 py-2 cursor-pointer"
-                                                onClick={() => toggleCategory(category)}
-                                            >
-                                                {expandedCategories[category] ? "▼" : "▶"} {category}
+                                        <tr key={`category-${category}`} className="bg-gray-200 text-corvid-blue font-bold">
+                                            <td className="px-4 py-2 cursor-pointer flex items-center" onClick={() => toggleCategory(category)}>
+                                                <ChevronDown
+                                                    className={`transition-transform ${
+                                                        expandedCategories[category] ? "rotate-180" : ""
+                                                    }`}
+                                                />
+                                                {category}
                                             </td>
-                                            <td className="px-4 py-2 text-right">{formattedAmount}</td>
+                                            <td className="px-4 py-2 text-right">${formattedAmount}</td>
                                         </tr>
                                     );
                                 }
 
                                 if (expandedCategories[category]) {
                                     acc.rows.push(
-                                        <tr key={subcategory} className="text-sm text-corvid-blue text-gray-600">
+                                        <tr key={`subcategory-${category}-${index}`} className="text-sm text-corvid-blue text-gray-600">
                                             <td className="px-6 py-1">{subcategory}</td>
-                                            <td className="px-4 py-1 text-right">{formattedAmount}</td>
+                                            <td className="px-4 py-1 text-right">${formattedAmount}</td>
                                         </tr>
                                     );
                                 }
 
                                 return acc;
-                            }, { categories: [], rows: [] }).rows}
+                            }, { categories: new Set(), rows: [] }).rows}
                         </tbody>
                     </table>
                 )}
