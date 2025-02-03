@@ -1,7 +1,6 @@
 const express = require("express");
 const { Pool } = require("pg");
 const cors = require("cors");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
@@ -19,26 +18,27 @@ const pool = new Pool({
 
 const secretKey = process.env.JWT_SECRET;
 
-// Login Route
 app.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
     try {
+        console.log(`Login attempt: ${username}`);
+
         const userQuery = await pool.query("SELECT * FROM financial_data.users WHERE username = $1", [username]);
 
         if (userQuery.rows.length === 0) {
+            console.log("User not found.");
             return res.status(401).json({ error: "Invalid username or password" });
         }
 
         const user = userQuery.rows[0];
+        console.log(`User found: ${user.username}, Stored Password: ${user.password}`);
 
-        // Verify password with bcrypt
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (!passwordMatch) {
+        if (password !== user.password) {
+            console.log("Password does not match.");
             return res.status(401).json({ error: "Invalid username or password" });
         }
 
-        // Generate JWT token
         const token = jwt.sign(
             { id: user.id, username: user.username, first_name: user.first_name, last_name: user.last_name },
             secretKey,
@@ -57,7 +57,6 @@ app.post("/login", async (req, res) => {
     }
 });
 
-// Logout Route
 app.post("/logout", (req, res) => {
     res.json({ message: "Logged out successfully" });
 });
@@ -166,9 +165,10 @@ app.get("/net_income", async (req, res) => {
             return res.status(400).json({ error: "Period is required" });
         }
 
-        console.log("Fetching Net Income for:", { entity, period });
+        const parsedPeriod = parseInt(period); 
+        console.log("Fetching Net Income for:", { entity, period: parsedPeriod });
 
-        const values = [period, period - 1]; // Current and previous month
+        const values = [parsedPeriod, parsedPeriod - 1]; 
         let query = `
             SELECT period, SUM(amount) AS amount
             FROM financial_data.consolidated_income
@@ -187,24 +187,25 @@ app.get("/net_income", async (req, res) => {
         console.log("Query Values:", values);
 
         const result = await pool.query(query, values);
+        console.log("Query Result:", result.rows);
 
         let netIncomeData = { current: 0, previous: 0 };
 
         result.rows.forEach(({ period, amount }) => {
-            if (parseInt(period) === parseInt(req.query.period)) {
+            if (parseInt(period) === parsedPeriod) {
                 netIncomeData.current = parseFloat(amount);
-            } else {
+            } else if (parseInt(period) === parsedPeriod - 1) {
                 netIncomeData.previous = parseFloat(amount);
             }
         });
 
+        console.log("Final Net Income Data:", netIncomeData);
         res.json(netIncomeData);
     } catch (err) {
         console.error("Error fetching Net Income data:", err.message);
         res.status(500).json({ error: err.message });
     }
 });
-
 
 app.get("/financial-summary", async (req, res) => {
     try {

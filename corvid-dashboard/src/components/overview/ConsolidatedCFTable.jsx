@@ -7,6 +7,7 @@ const ConsolidatedCFTable = () => {
     const [balanceSheetData, setBalanceSheetData] = useState({});
     const [loading, setLoading] = useState(true);
     const [netIncome, setNetIncome] = useState("-");
+    const [prevNetIncome, setPrevNetIncome] = useState("-");
 
     const months = [
         "Jan 2024", "Feb 2024", "Mar 2024", "Apr 2024", "May 2024", "Jun 2024",
@@ -62,7 +63,9 @@ const ConsolidatedCFTable = () => {
         
                 console.log("Net Income Response:", response.data);
         
-                setNetIncome(response.data.length > 0 ? response.data[0].amount.toLocaleString() : "No data available");
+                setNetIncome(response.data.current ? response.data.current.toLocaleString() : "-");
+                setPrevNetIncome(response.data.previous ? response.data.previous.toLocaleString() : "-");
+
             } catch (error) {
                 console.error("Error fetching Net Income:", error.response ? error.response.data : error.message);
                 setNetIncome("Error");
@@ -86,8 +89,10 @@ const ConsolidatedCFTable = () => {
             return {
                 name: displayName,
                 currentAmount: netIncome,
-                previousAmount: "-",
-                difference: "-",
+                previousAmount: prevNetIncome, // Set the previous period value
+                difference: prevNetIncome !== "-" && netIncome !== "-" ? 
+                            (parseFloat(netIncome.replace(/,/g, '')) - parseFloat(prevNetIncome.replace(/,/g, ''))).toLocaleString() 
+                            : "-",
                 isHeader: false
             };
         }
