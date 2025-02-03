@@ -27,6 +27,7 @@ const LoginPage = ({ onLoginSuccess }) => {
                 setErrorMessage(data.error || "Login failed");
             } else {
                 localStorage.setItem("token", data.token); 
+                localStorage.setItem("user", JSON.stringify(data.user));
                 onLoginSuccess(); 
             }
         } catch (error) {

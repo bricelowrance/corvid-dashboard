@@ -9,43 +9,20 @@ const ConsolidatedCFTable = () => {
     const [netIncome, setNetIncome] = useState("-");
 
     const months = [
-        "Jan 2024",
-        "Feb 2024",
-        "Mar 2024",
-        "Apr 2024",
-        "May 2024",
-        "Jun 2024",
-        "Jul 2024",
-        "Aug 2024",
-        "Sep 2024",
-        "Oct 2024",
-        "Nov 2024",
-        "Dec 2024",
+        "Jan 2024", "Feb 2024", "Mar 2024", "Apr 2024", "May 2024", "Jun 2024",
+        "Jul 2024", "Aug 2024", "Sep 2024", "Oct 2024", "Nov 2024", "Dec 2024"
     ];
 
     const categoryOrder = [
-        "NET INCOME",
-        "OPERATING ACTIVITIES",
-        "ACCOUNTS RECEIVABLE",
-        "UNBILLED RECEIVABLE",
-        "OTHER CURRENT ASSETS",
-        "ACCOUNTS PAYABLE",
-        "PAYROLL LIABILITIES",
-        "ACCRUED EXPENSES",
-        "DEFERRED REVENUE",
-        "OTHER CURRENT LIABILITIES",
-        "DEPOSITS",
-        "INVESTING ACTIVITIES",
-        "NET FIXED ASSETS",
-        "FINANCING ACTIVITIES",
-        "LONG TERM LIABILITIES",
-        "DIVIDENDS",
-        "CASH",
+        "NET INCOME", "OPERATING ACTIVITIES", "ACCOUNTS RECEIVABLE", "UNBILLED RECEIVABLE",
+        "OTHER CURRENT ASSETS", "ACCOUNTS PAYABLE", "PAYROLL LIABILITIES", "ACCRUED EXPENSES",
+        "DEFERRED REVENUE", "OTHER CURRENT LIABILITIES", "DEPOSITS", "INVESTING ACTIVITIES",
+        "NET FIXED ASSETS", "FINANCING ACTIVITIES", "LONG TERM LIABILITIES", "DIVIDENDS", "CASH"
     ];
 
     const categoryDisplayNames = {
         "NET FIXED ASSETS": "PURCHASES OF FIXED ASSETS",
-        "LONG TERM LIABILITIES": "PRINCIPLE PAYMENTS ON LOANS",
+        "LONG TERM LIABILITIES": "PRINCIPAL PAYMENTS ON LOANS",
         "DIVIDENDS": "DISTRIBUTIONS",
         "CASH": "INCREASE IN CASH",
     };
@@ -53,6 +30,7 @@ const ConsolidatedCFTable = () => {
     useEffect(() => {
         const fetchBalanceSheetData = async () => {
             try {
+                setLoading(true);
                 const response = await axios.get("http://localhost:5000/balance", {
                     params: { entity: selectedCompany === "Consolidated" ? undefined : selectedCompany },
                 });
@@ -91,12 +69,11 @@ const ConsolidatedCFTable = () => {
             }
         };
 
-        setLoading(true);
         fetchBalanceSheetData();
         fetchNetIncome();
     }, [selectedCompany, selectedMonth]);
 
-    const calculateCashFlow = (category) => {
+    const calculateDifference = (category) => {
         if (!balanceSheetData[category]) return "-";
         const currentMonthValue = balanceSheetData[category][selectedMonth] || 0;
         const previousMonthValue = selectedMonth > 0 ? balanceSheetData[category][selectedMonth - 1] || 0 : 0;
@@ -104,26 +81,35 @@ const ConsolidatedCFTable = () => {
     };
 
     const filteredAndOrderedData = categoryOrder.map((category) => {
-        const displayName = categoryDisplayNames[category] || category; 
+        const displayName = categoryDisplayNames[category] || category;
         if (category === "NET INCOME") {
-            return { name: displayName, amount: netIncome, isHeader: false };
+            return {
+                name: displayName,
+                currentAmount: netIncome,
+                previousAmount: "-",
+                difference: "-",
+                isHeader: false
+            };
         }
         if (["OPERATING ACTIVITIES", "INVESTING ACTIVITIES", "FINANCING ACTIVITIES"].includes(category)) {
-            return { name: displayName, amount: "", isHeader: true };
+            return { name: displayName, currentAmount: "", previousAmount: "", difference: "", isHeader: true };
         }
         return {
             name: displayName,
-            amount: calculateCashFlow(category),
-            isHeader: false,
+            currentAmount: balanceSheetData[category] ? balanceSheetData[category][selectedMonth]?.toLocaleString() || "-" : "-",
+            previousAmount: selectedMonth > 0 ? balanceSheetData[category]?.[selectedMonth - 1]?.toLocaleString() || "-" : "-",
+            difference: calculateDifference(category),
+            isHeader: false
         };
     });
 
     return (
         <div className="flex flex-col justify-center pt-6 min-h-screen">
-            <div className="bg-white bg-opacity-100 shadow-lg rounded-xl p-10 border border-gray-700 w-full max-w-7xl">
+            <div className="bg-white shadow-lg rounded-xl p-10 border border-gray-700 w-full max-w-7xl">
                 <h2 className="text-xl font-bold text-corvid-blue mb-6 text-center">
                     {selectedCompany} Statement of Cash Flows
                 </h2>
+
                 <div className="mb-6">
                     <label htmlFor="companySelect" className="block text-corvid-blue mb-2 text-sm">
                         Select a Company:
@@ -169,28 +155,19 @@ const ConsolidatedCFTable = () => {
                     <table className="w-full table-fixed divide-y divide-gray-700 text-xs">
                         <thead>
                             <tr>
-                                <th
-                                    className="px-6 py-2 text-right font-bold text-corvid-blue uppercase border-gray-700"
-                                    style={{ width: "50%" }}
-                                >
-                                    Category
-                                </th>
-                                <th
-                                    className="px-6 py-2 text-left font-bold text-corvid-blue uppercase border-gray-700"
-                                    style={{ width: "50%" }}
-                                >
-                                    Amount
-                                </th>
+                                <th className="px-4 py-2 text-left font-bold text-corvid-blue uppercase">Category</th>
+                                <th className="px-4 py-2 text-right font-bold text-corvid-blue uppercase">Current Period</th>
+                                <th className="px-4 py-2 text-right font-bold text-corvid-blue uppercase">Previous Period</th>
+                                <th className="px-4 py-2 text-right font-bold text-corvid-blue uppercase">Cash Flow</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-gray-700">
-                            {filteredAndOrderedData.map(({ name, amount, isHeader }, index) => (
-                                <tr
-                                    key={index}
-                                    className={isHeader ? "text-corvid-blue font-extrabold" : "font-semibold text-corvid-blue"}
-                                >
-                                    <td className="py-4 px-6 text-right">{name}</td>
-                                    <td className="py-4 px-6 text-left">{amount}</td>
+                        <tbody>
+                            {filteredAndOrderedData.map(({ name, currentAmount, previousAmount, difference, isHeader }, index) => (
+                                <tr key={index} className={isHeader ? "text-corvid-blue font-extrabold" : "font-semibold text-corvid-blue"}>
+                                    <td className="py-2 px-4 text-left">{name}</td>
+                                    <td className="py-2 px-4 text-right">{currentAmount}</td>
+                                    <td className="py-2 px-4 text-right">{previousAmount}</td>
+                                    <td className="py-2 px-4 text-right">{difference}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -202,4 +179,5 @@ const ConsolidatedCFTable = () => {
 };
 
 export default ConsolidatedCFTable;
+
 

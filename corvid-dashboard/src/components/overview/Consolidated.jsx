@@ -19,7 +19,18 @@ const Consolidated = () => {
                 const response = await axios.get("http://localhost:5000/financial-summary", {
                     params: { year, period, entity },
                 });
-                setFinancialData(response.data);
+
+                // **Aggregate amounts by category**
+                const aggregatedData = response.data.reduce((acc, { category, subcategory, total_amount }) => {
+                    if (!acc[category]) {
+                        acc[category] = { category, total_amount: 0, subcategories: [] };
+                    }
+                    acc[category].total_amount += Number(total_amount) || 0;
+                    acc[category].subcategories.push({ subcategory, amount: Number(total_amount) || 0 });
+                    return acc;
+                }, {});
+
+                setFinancialData(Object.values(aggregatedData));
             } catch (error) {
                 console.error("Error fetching financial data:", error);
             } finally {
@@ -59,17 +70,17 @@ const Consolidated = () => {
 
                     <div>
                         <label className="block text-corvid-blue font-semibold mb-2 text-sm">Select Month:</label>
-                            <select
-                                value={period}
-                                onChange={(e) => setPeriod(e.target.value)}
-                                className="bg-gray-200 text-corvid-blue px-4 py-2 rounded text-sm"
-                            >
-                                {months.map((month, index) => (
-                                    <option key={index + 1} value={index + 1}>
-                                        {month}
-                                    </option>
-                                ))}
-                            </select>
+                        <select
+                            value={period}
+                            onChange={(e) => setPeriod(e.target.value)}
+                            className="bg-gray-200 text-corvid-blue px-4 py-2 rounded text-sm"
+                        >
+                            {months.map((month, index) => (
+                                <option key={index + 1} value={index + 1}>
+                                    {month}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <div>
@@ -101,39 +112,31 @@ const Consolidated = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {financialData.reduce((acc, { category, subcategory, total_amount }, index) => {
-                                const amount = Number(total_amount) || 0;
-                                const formattedAmount = amount.toLocaleString("en-US", {
-                                });
+                            {financialData.map(({ category, total_amount, subcategories }) => (
+                                <React.Fragment key={category}>
+                                    {/* **Category Row with Total Amount** */}
+                                    <tr className="bg-gray-200 text-corvid-blue font-bold">
+                                        <td className="px-4 py-2 cursor-pointer flex items-center" onClick={() => toggleCategory(category)}>
+                                            <ChevronDown
+                                                className={`transition-transform ${expandedCategories[category] ? "rotate-180" : ""}`}
+                                            />
+                                            {category}
+                                        </td>
+                                        <td className="px-4 py-2 text-right">
+                                            ${total_amount.toLocaleString("en-US")}
+                                        </td>
+                                    </tr>
 
-                                if (!acc.categories.has(category)) {
-                                    acc.categories.add(category);
-                                    acc.rows.push(
-                                        <tr key={`category-${category}`} className="bg-gray-200 text-corvid-blue font-bold">
-                                            <td className="px-4 py-2 cursor-pointer flex items-center" onClick={() => toggleCategory(category)}>
-                                                <ChevronDown
-                                                    className={`transition-transform ${
-                                                        expandedCategories[category] ? "rotate-180" : ""
-                                                    }`}
-                                                />
-                                                {category}
-                                            </td>
-                                            <td className="px-4 py-2 text-right">${formattedAmount}</td>
-                                        </tr>
-                                    );
-                                }
-
-                                if (expandedCategories[category]) {
-                                    acc.rows.push(
-                                        <tr key={`subcategory-${category}-${index}`} className="text-sm text-corvid-blue text-gray-600">
-                                            <td className="px-6 py-1">{subcategory}</td>
-                                            <td className="px-4 py-1 text-right">${formattedAmount}</td>
-                                        </tr>
-                                    );
-                                }
-
-                                return acc;
-                            }, { categories: new Set(), rows: [] }).rows}
+                                    {/* **Subcategory Rows** */}
+                                    {expandedCategories[category] &&
+                                        subcategories.map(({ subcategory, amount }, index) => (
+                                            <tr key={`subcategory-${category}-${index}`} className="text-sm text-corvid-blue text-gray-600">
+                                                <td className="px-6 py-1">{subcategory}</td>
+                                                <td className="px-4 py-1 text-right">${amount.toLocaleString("en-US")}</td>
+                                            </tr>
+                                        ))}
+                                </React.Fragment>
+                            ))}
                         </tbody>
                     </table>
                 )}
@@ -143,3 +146,4 @@ const Consolidated = () => {
 };
 
 export default Consolidated;
+

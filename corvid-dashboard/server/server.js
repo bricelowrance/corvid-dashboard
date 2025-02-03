@@ -1,10 +1,11 @@
 const express = require("express");
 const { Pool } = require("pg");
 const cors = require("cors");
-require("dotenv").config();
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const app = express();
+require("dotenv").config();
 
+const app = express();
 app.use(cors());
 app.use(express.json());
 
@@ -18,21 +19,26 @@ const pool = new Pool({
 
 const secretKey = process.env.JWT_SECRET;
 
+// Login Route
 app.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
     try {
         const userQuery = await pool.query("SELECT * FROM financial_data.users WHERE username = $1", [username]);
+
         if (userQuery.rows.length === 0) {
             return res.status(401).json({ error: "Invalid username or password" });
         }
 
         const user = userQuery.rows[0];
 
-        if (password !== user.password) {
+        // Verify password with bcrypt
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
             return res.status(401).json({ error: "Invalid username or password" });
         }
 
+        // Generate JWT token
         const token = jwt.sign(
             { id: user.id, username: user.username, first_name: user.first_name, last_name: user.last_name },
             secretKey,
@@ -44,10 +50,16 @@ app.post("/login", async (req, res) => {
             token,
             user: { first_name: user.first_name, last_name: user.last_name },
         });
+
     } catch (error) {
         console.error("Error during login:", error);
         res.status(500).json({ error: "An error occurred during login. Please try again later." });
     }
+});
+
+// Logout Route
+app.post("/logout", (req, res) => {
+    res.json({ message: "Logged out successfully" });
 });
 
 app.get("/data", async (req, res) => {
@@ -150,44 +162,49 @@ app.get("/balance", async (req, res) => {
 app.get("/net_income", async (req, res) => {
     try {
         const { entity, period } = req.query;
+        if (!period) {
+            return res.status(400).json({ error: "Period is required" });
+        }
 
-        console.log("Fetching Net Income with params:", { entity, period });
+        console.log("Fetching Net Income for:", { entity, period });
 
+        const values = [period, period - 1]; // Current and previous month
         let query = `
             SELECT period, SUM(amount) AS amount
             FROM financial_data.consolidated_income
             WHERE UPPER(category) = 'NET INCOME'
+              AND period IN ($1, $2)
         `;
-        const values = [];
 
         if (entity && entity !== "Consolidated") {
-            query += ` AND entity = $1`;
+            query += ` AND entity = $3`;
             values.push(entity);
-        }
-
-        if (period) {
-            query += ` AND period = $${values.length + 1}`;
-            values.push(period);
         }
 
         query += ` GROUP BY period ORDER BY period`;
 
-        console.log("Constructed Query:", query);
+        console.log("Executing Query:", query);
         console.log("Query Values:", values);
 
         const result = await pool.query(query, values);
 
-        console.log("Query Result:", result.rows);
+        let netIncomeData = { current: 0, previous: 0 };
 
-        res.json(result.rows.map(({ period, amount }) => ({
-            period,
-            amount: parseFloat(amount),
-        })));
+        result.rows.forEach(({ period, amount }) => {
+            if (parseInt(period) === parseInt(req.query.period)) {
+                netIncomeData.current = parseFloat(amount);
+            } else {
+                netIncomeData.previous = parseFloat(amount);
+            }
+        });
+
+        res.json(netIncomeData);
     } catch (err) {
         console.error("Error fetching Net Income data:", err.message);
         res.status(500).json({ error: err.message });
     }
 });
+
 
 app.get("/financial-summary", async (req, res) => {
     try {
