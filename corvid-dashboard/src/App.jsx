@@ -3,7 +3,6 @@ import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import OverviewPage from "./pages/OverviewPage";
 import BPage from "./pages/BPage";
-import BTPage from "./pages/BTPage";
 import BSPage from "./pages/BSPage";
 import CFPage from "./pages/CFPage";
 import LoginPage from "./pages/LoginPage";
@@ -35,7 +34,6 @@ function App() {
                         <Route path="/" element={<OverviewPage />} />
                         <Route path="/b" element={<BPage />} />
                         <Route path="/bs" element={<BSPage />} />
-                        <Route path="/bt" element={<BTPage />} />
                         <Route path="/cf" element={<CFPage />} />
                     </>
                 ) : (

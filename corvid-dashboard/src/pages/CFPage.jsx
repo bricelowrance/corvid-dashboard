@@ -6,7 +6,7 @@ const CFPage = () => {
     <div className="flex-1 overflow-auto relative z-10">
         <Header title="Dashboard" />
 
-        <main className="max-w-7xl mx-auto py-1 px-4 lg:px-1">
+        <main className="mx-auto py-1 px-4 lg:px-1">
 
             {/* CHARTS */}
 

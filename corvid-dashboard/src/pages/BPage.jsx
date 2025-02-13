@@ -1,5 +1,5 @@
 import Header from "../components/common/Header"
-import Consolidated from "../components/overview/Consolidated";
+import Consolidated from "../components/overview/BalanceSheets";
 
 const BPage = () => {
   return (

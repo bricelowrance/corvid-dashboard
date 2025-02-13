@@ -109,8 +109,8 @@ const ConsolidatedCFTable = () => {
     });
 
     return (
-        <div className="flex flex-col justify-center pt-6 min-h-screen">
-            <div className="bg-white shadow-lg rounded-xl p-10 border border-gray-700 w-full max-w-7xl">
+        <div className="flex flex-col items-center pt-6 min-h-screen">
+            <div className="bg-white shadow-lg p-10 border border-gray-700 w-full max-w-7xl">
                 <h2 className="text-xl font-bold text-corvid-blue mb-6 text-center">
                     {selectedCompany} Statement of Cash Flows
                 </h2>
@@ -161,18 +161,18 @@ const ConsolidatedCFTable = () => {
                         <thead>
                             <tr>
                                 <th className="px-4 py-2 text-left font-bold text-corvid-blue uppercase">Category</th>
-                                <th className="px-4 py-2 text-right font-bold text-corvid-blue uppercase">Current Period</th>
                                 <th className="px-4 py-2 text-right font-bold text-corvid-blue uppercase">Previous Period</th>
+                                <th className="px-4 py-2 text-right font-bold text-corvid-blue uppercase">Current Period</th>
                                 <th className="px-4 py-2 text-right font-bold text-corvid-blue uppercase">Cash Flow</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredAndOrderedData.map(({ name, currentAmount, previousAmount, difference, isHeader }, index) => (
                                 <tr key={index} className={isHeader ? "text-corvid-blue font-extrabold" : "font-semibold text-corvid-blue"}>
-                                    <td className="py-2 px-4 text-left">{name}</td>
-                                    <td className="py-2 px-4 text-right">{currentAmount}</td>
-                                    <td className="py-2 px-4 text-right">{previousAmount}</td>
-                                    <td className="py-2 px-4 text-right">{difference}</td>
+                                    <td className="py-2 px-4 text-left text-sm">{name}</td>
+                                    <td className="py-2 px-4 text-right font-bold text-sm">{previousAmount}</td>
+                                    <td className="py-2 px-4 text-right font-bold text-sm">{currentAmount}</td>
+                                    <td className="py-2 px-4 text-right font-bold text-sm">{difference}</td>
                                 </tr>
                             ))}
                         </tbody>

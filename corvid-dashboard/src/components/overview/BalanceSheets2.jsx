@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 import axios from "axios";
 
-const Consolidated = () => {
+const BalanceSheets2 = () => {
     const [year, setYear] = useState("2024");
     const [period, setPeriod] = useState("1");
     const [entity, setEntity] = useState("CORVID");
@@ -20,6 +20,16 @@ const Consolidated = () => {
                     params: { year, period, entity },
                 });
 
+                // **Define the category order**
+                const categoryOrder = [
+                    "CURRENT ASSETS",
+                    "FIXED ASSETS",
+                    "DEPOSITS",
+                    "CURRENT LIABILITIES",
+                    "LONG TERM LIABILITIES",
+                    "EQUITY"
+                ];
+
                 // **Aggregate amounts by category**
                 const aggregatedData = response.data.reduce((acc, { category, subcategory, total_amount }) => {
                     if (!acc[category]) {
@@ -30,7 +40,12 @@ const Consolidated = () => {
                     return acc;
                 }, {});
 
-                setFinancialData(Object.values(aggregatedData));
+                // **Convert to array and sort by predefined category order**
+                const orderedData = Object.values(aggregatedData).sort((a, b) => {
+                    return categoryOrder.indexOf(a.category) - categoryOrder.indexOf(b.category);
+                });
+
+                setFinancialData(orderedData);
             } catch (error) {
                 console.error("Error fetching financial data:", error);
             } finally {
@@ -49,10 +64,10 @@ const Consolidated = () => {
     };
 
     return (
-        <div className="flex flex-col justify-center pt-6 min-h-screen">
-            <div className="bg-white shadow-lg rounded-xl p-10 border border-gray-700 w-full max-w-7xl">
+        <div className="flex flex-col items-center pt-6">
+            <div className="bg-white shadow-lg p-10 border border-gray-700 w-full max-w-7xl">
                 <h2 className="text-xl font-extrabold text-corvid-blue mb-6 text-center">
-                    {entity} Balance Sheets
+                    {entity} Balance Sheet
                 </h2>
 
                 <div className="flex justify-between mb-6">
@@ -112,31 +127,48 @@ const Consolidated = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {financialData.map(({ category, total_amount, subcategories }) => (
-                                <React.Fragment key={category}>
-                                    {/* **Category Row with Total Amount** */}
-                                    <tr className="bg-gray-200 text-corvid-blue font-bold">
-                                        <td className="px-4 py-2 cursor-pointer flex items-center" onClick={() => toggleCategory(category)}>
-                                            <ChevronDown
-                                                className={`transition-transform ${expandedCategories[category] ? "rotate-180" : ""}`}
-                                            />
-                                            {category}
-                                        </td>
-                                        <td className="px-4 py-2 text-right">
-                                            ${total_amount.toLocaleString("en-US")}
-                                        </td>
-                                    </tr>
+                            {financialData.map(({ category, total_amount, subcategories }) => {
+                                // Check if the category is "DEPOSITS"
+                                const isDeposits = category === "DEPOSITS";
+                                const hasDistinctSubcategories = subcategories.length > 0 && !isDeposits;
 
-                                    {/* **Subcategory Rows** */}
-                                    {expandedCategories[category] &&
-                                        subcategories.map(({ subcategory, amount }, index) => (
-                                            <tr key={`subcategory-${category}-${index}`} className="text-sm text-corvid-blue text-gray-600">
-                                                <td className="px-6 py-1">{subcategory}</td>
-                                                <td className="px-4 py-1 text-right">${amount.toLocaleString("en-US")}</td>
-                                            </tr>
-                                        ))}
-                                </React.Fragment>
-                            ))}
+                                return (
+                                    <React.Fragment key={category}>
+                                        {/* **Category Row with Total Amount** */}
+                                        <tr className="bg-gray-200 text-corvid-blue font-bold">
+                                            <td
+                                                className={`px-4 py-2 flex items-center ${
+                                                    hasDistinctSubcategories ? "cursor-pointer" : ""
+                                                }`}
+                                                onClick={() => hasDistinctSubcategories && toggleCategory(category)}
+                                            >
+                                                {category}
+                                                {/* Show dropdown arrow only if there are distinct subcategories and it’s NOT "DEPOSITS" */}
+                                                {hasDistinctSubcategories && (
+                                                    <ChevronDown
+                                                        className={`transition-transform ${
+                                                            expandedCategories[category] ? "rotate-180" : ""
+                                                        }`}
+                                                    />
+                                                )}
+                                            </td>
+                                            <td className="px-4 py-2 text-right">
+                                                ${total_amount.toLocaleString("en-US")}
+                                            </td>
+                                        </tr>
+
+                                        {/* **Subcategory Rows (Only if expandable and NOT "DEPOSITS")** */}
+                                        {hasDistinctSubcategories &&
+                                            expandedCategories[category] &&
+                                            subcategories.map(({ subcategory, amount }, index) => (
+                                                <tr key={`subcategory-${category}-${index}`} className="text-sm text-corvid-blue text-gray-600">
+                                                    <td className="px-6 py-1">{subcategory}</td>
+                                                    <td className="px-4 py-1 text-right">${amount.toLocaleString("en-US")}</td>
+                                                </tr>
+                                            ))}
+                                    </React.Fragment>
+                                );
+                            })}
                         </tbody>
                     </table>
                 )}
@@ -145,5 +177,6 @@ const Consolidated = () => {
     );
 };
 
-export default Consolidated;
+export default BalanceSheets2;
+
 

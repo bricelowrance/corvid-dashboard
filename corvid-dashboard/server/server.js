@@ -232,6 +232,83 @@ app.get("/financial-summary", async (req, res) => {
     }
 });
 
+app.get("/income-summary", async (req, res) => {
+    try {
+        const { year, period, entity } = req.query;
+
+        if (!year || !period || !entity) {
+            return res.status(400).json({ error: "Year, period, and entity are required parameters" });
+        }
+
+        const query = `
+            SELECT category, subcategory, SUM(amount) AS total_amount
+            FROM financial_data.income_statements
+            WHERE year = $1 AND period = $2 AND entity = $3
+            GROUP BY category, subcategory
+            ORDER BY category, subcategory
+        `;
+        const values = [year, period, entity];
+
+        const result = await pool.query(query, values);
+     
+        const structuredData = {};
+        result.rows.forEach(({ category, subcategory, total_amount }) => {
+            if (!structuredData[category]) {
+                structuredData[category] = {
+                    category,
+                    total_amount: 0,
+                    subcategories: []
+                };
+            }
+            structuredData[category].total_amount += Number(total_amount);
+            if (subcategory) {
+                structuredData[category].subcategories.push({
+                    subcategory,
+                    amount: Number(total_amount)
+                });
+            }
+        });
+        res.json(Object.values(structuredData));
+    } catch (err) {
+        console.error("Error fetching income statement:", err.message);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+app.get("/income-chart", async (req, res) => {
+    try {
+        const { year, entity, category } = req.query;
+
+        if (!year || !entity) {
+            return res.status(400).json({ error: "Year and entity are required parameters" });
+        }
+
+        let query = `
+            SELECT period, category, SUM(amount) AS total_amount
+            FROM financial_data.income_statements
+            WHERE year = $1 AND entity = $2
+        `;
+        const values = [year, entity];
+
+        if (category) {
+            query += " AND category = $3";
+            values.push(category);
+        }
+
+        query += `
+            GROUP BY period, category
+            ORDER BY period;
+        `;
+
+        const result = await pool.query(query, values);
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Error fetching income statement:", err.message);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

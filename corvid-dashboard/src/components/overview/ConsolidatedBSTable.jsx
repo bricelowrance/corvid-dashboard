@@ -78,8 +78,8 @@ const ConsolidatedBSTable = () => {
     
 
     return (
-        <div className="flex flex-col justify-center pt-6 min-h-screen">
-            <div className="bg-white bg-opacity-100 shadow-lg rounded-xl p-10 border border-gray-700 w-full max-w-7xl">
+        <div className="flex flex-col pt-0 min-h-screen">
+            <div className="bg-white bg-opacity-100 shadow-lg p-10 border border-gray-700 w-full max-w-7xl">
                 <h2 className="text-xl font-extrabold text-corvid-blue mb-6 text-center">
                     {selectedCompany} Balance Statement
                 </h2>

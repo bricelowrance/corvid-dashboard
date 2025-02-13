@@ -51,17 +51,17 @@ const IncomeCharts = () => {
 
     return (
         <motion.div
-            className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700"
+            className="bg-white bg-opacity-100 backdrop-blur-md shadow-lg p-6 border border-gray-700"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
         >
-            <h2 className="text-xl font-medium mb-4 text-gray-100">
+            <h2 className="text-xl font-medium mb-4 text-corvid-blue">
                 {category} in {year} for {entity}
             </h2>
             <div className="flex gap-4 mb-4">
                 <select
-                    className="bg-gray-700 text-gray-300 p-2 rounded"
+                    className="bg-gray-200 text-corvid-blue p-2 rounded"
                     value={year}
                     onChange={(e) => setYear(e.target.value)}
                 >
@@ -73,7 +73,7 @@ const IncomeCharts = () => {
                     <option value="2019">2019</option>
                 </select>
                 <select
-                    className="bg-gray-700 text-gray-300 p-2 rounded"
+                    className="bg-gray-200 text-corvid-blue p-2 rounded"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                 >
@@ -91,7 +91,7 @@ const IncomeCharts = () => {
                     <option value="UNALLOWABLE EXPENSE">Unallowable Expense</option>
                 </select>
                 <select
-                    className="bg-gray-700 text-gray-300 p-2 rounded"
+                    className="bg-gray-200 text-corvid-blue p-2 rounded"
                     value={entity}
                     onChange={(e) => setEntity(e.target.value)}
                 >
@@ -111,26 +111,26 @@ const IncomeCharts = () => {
                         data={chartData}
                         margin={{ top: 10, right: 20, left: 40, bottom: 5 }}
                     >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
-                        <XAxis dataKey="name" stroke="#9ca3af" />
+                        <CartesianGrid strokeDasharray="3 3" stroke="#23356b" />
+                        <XAxis dataKey="name" stroke="#23356b" />
                         <YAxis
-                            stroke="#9ca3af"
+                            stroke="#23356b"
                             tickFormatter={(value) => formatCurrency(value)}
                         />
                         <Tooltip
                             formatter={(value) => [`$${value.toLocaleString()}`, "Amount"]} 
                             contentStyle={{
-                                backgroundColor: "rgba(31, 41, 55, 0.8)",
-                                borderColor: "#4B5563",
+                                backgroundColor: "#23356b",
+                                borderColor: "#23356b",
                             }}
-                            itemStyle={{ color: "#E5E7EB" }}
+                            itemStyle={{ color: "white" }}
                         />
                         <Line
                             type="monotone"
                             dataKey="amount"
-                            stroke="#6366F1"
+                            stroke="#23356b"
                             strokeWidth={3}
-                            dot={{ fill: "#6366F1", strokeWidth: 2, r: 6 }}
+                            dot={{ fill: "#23356b", strokeWidth: 2, r: 6 }}
                             activeDot={{ r: 8, strokeWidth: 2 }}
                         />
                     </LineChart>

@@ -1,6 +1,9 @@
 import Header from "../components/common/Header"
-import IncomeCharts from "../components/overview/IncomeCharts"
 import ConsolidatedISTable from "../components/overview/ConsolidatedISTable"
+import IncomeCharts from "../components/overview/IncomeCharts"
+import IncomeComparisonChart from "../components/overview/IncomeComparisonChart"
+import IncomeStatements from "../components/overview/IncomeStatements"
+import IncomeStatements2 from "../components/overview/IncomeStatements2"
 
 const OverviewPage = () => {
   return (
@@ -8,13 +11,15 @@ const OverviewPage = () => {
         <Header title="Dashboard" />
 
         <main className="max-w-7xl mx-auto py-1 px-4 lg:px-1">
-
-            {/* CHARTS */}
-
-            <div className="grid grid-cols-1 gap-8 mb-8">
-                <ConsolidatedISTable />
+            <div className="grid grid-cols-2 gap-0 mb-8">
+              <IncomeStatements />
+              <IncomeStatements2 />
             </div>
-            
+            <div classname="grid grid-cols-1 gap-0 mb-8">
+              <ConsolidatedISTable />
+              <IncomeCharts />
+              <IncomeComparisonChart />
+            </div>
         </main>
 
     </div>
