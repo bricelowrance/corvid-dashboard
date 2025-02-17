@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
-import { ArrowUp, ArrowDown } from "lucide-react";
 import axios from "axios";
 
 const IncomeStatements2 = () => {
@@ -76,45 +75,53 @@ const IncomeStatements2 = () => {
         return subItem ? subItem.amount : 0;
     };
 
+    let operatingCosts = 0;
     let netIncome = 0;
     let ebitda = 0;
 
     switch (entity) {
         case "CORVID":
+            operatingCosts = getAmount("DIRECT COST") + getAmount("INDIRECT COST");
             netIncome = getAmount("REVENUE") - getAmount("DIRECT COST") - getAmount("INDIRECT COST") - getAmount("UNALLOWABLE/OTHER") - getAmount("INTEREST EXPENSE");
             ebitda = netIncome + getSubAmount("INDIRECT COST", "G&A DEPRECIATION") + getSubAmount("INDIRECT COST", "OH DEPRECIATION") +
                      getAmount("INTEREST EXPENSE") + getSubAmount("INDIRECT COST", "G&A TAXES") + getSubAmount("INDIRECT COST", "OH TAXES");
             break;
 
         case "ATEA":
+            operatingCosts = getAmount("DIRECT COST") + getAmount("INDIRECT COST");
             netIncome = getAmount("REVENUE") - getAmount("DIRECT COST") - getAmount("INDIRECT COST") - getAmount("UNALLOWABLE/OTHER");
             ebitda = netIncome + getSubAmount("INDIRECT COST", "G&A DEPRECIATION") + getSubAmount("INDIRECT COST", "OH DEPRECIATION") +
                      getSubAmount("INDIRECT COST", "TAXES");
             break;
 
         case "LYN":
+            operatingCosts = getAmount("DIRECT COST") + getAmount("INDIRECT COST");
             netIncome = getAmount("REVENUE") - getAmount("DIRECT COST") - getAmount("INDIRECT COST") - getAmount("UNALLOWABLE/OTHER") + getAmount("OTHER INCOME");
             ebitda = netIncome + getSubAmount("INDIRECT COST", "G&A DEPRECIATION") + getAmount("UNALLOWABLE/OTHER") +
                      getSubAmount("INDIRECT COST", "TAXES");
             break;
 
         case "CYBER":
+            operatingCosts = getAmount("DIRECT COST") + getAmount("INDIRECT COST");
             netIncome = getAmount("REVENUE") - getAmount("COSTS OF GOODS SOLD") - getAmount("INDIRECT COST") - getAmount("OTHER INDIRECTS");
             ebitda = netIncome + getAmount("DEPRECIATION") + getAmount("TAXES");
             break;
 
         case "HPC":
+            operatingCosts = getAmount("DIRECT COST") + getAmount("INDIRECT COST");
             netIncome = getAmount("REVENUE") - getAmount("DIRECT COST") - getAmount("INDIRECT COST") - getAmount("OTHER COST");
             ebitda = netIncome + getSubAmount("OTHER COST", "DEPRECIATION EXPENSE") + getSubAmount("OTHER COST", "INTEREST EXPENSE");
             break;
 
         case "TRDP":
+            operatingCosts = getAmount("DIRECT COST") + getAmount("INDIRECT COST");
             netIncome = getAmount("RECURRING REVENUE") + getAmount("NON-RECURRING REVENUE") - getAmount("OPERATING COSTS") - getAmount("FINANCING COST") - getAmount("NON CASH EXPENSE");
             ebitda = netIncome + getSubAmount("NON CASH EXPENSE", "DEPRECIATION") + getSubAmount("FINANCING COST", "INTEREST EXPENSE") +
                      getSubAmount("OPERATING COST", "TAXES");
             break;
 
         case "TALON":
+            operatingCosts = getAmount("DIRECT COST") + getAmount("INDIRECT COST");
             netIncome = getAmount("REVENUE") - getAmount("DIRECT COST") - getAmount("INDIRECT COST") - getAmount("PHANTOM PLAN EXPENSE");
             ebitda = netIncome + getAmount("DEPRECIATION");
             break;
@@ -231,6 +238,10 @@ const IncomeStatements2 = () => {
                             })}
                         </tbody>
                         <tfoot>
+                            <tr className="bg-gray-600 text-white font-bold">
+                                <td className="px-4 py-2">OPERATING COST</td>
+                                <td className="px-4 py-2 text-right">${operatingCosts.toLocaleString("en-US")}</td>
+                            </tr>
                             <tr className="bg-gray-700 text-white font-bold">
                                 <td className="px-4 py-2">NET INCOME</td>
                                 <td className="px-4 py-2 text-right">${netIncome.toLocaleString("en-US")}</td>
@@ -238,6 +249,13 @@ const IncomeStatements2 = () => {
                             <tr className="bg-gray-800 text-white font-bold">
                                 <td className="px-4 py-2">EBITDA</td>
                                 <td className="px-4 py-2 text-right">${ebitda.toLocaleString("en-US")}</td>
+                            </tr>
+                            <tr>
+                                {year === "2024" && period === "12" && entity === "TALON" && (
+                                    <p className="mt-4 text-red-600 font-bold">
+                                        * NOTE: Phantom Plan Expense INCLUDED in Net Income or EBITDA Calculations. *
+                                    </p>
+                                )}
                             </tr>
                         </tfoot>
                     </table>

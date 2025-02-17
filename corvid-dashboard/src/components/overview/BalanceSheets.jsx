@@ -19,8 +19,6 @@ const BalanceSheets = () => {
                 const response = await axios.get("http://localhost:5000/financial-summary", {
                     params: { year, period, entity },
                 });
-
-                // **Define the category order**
                 const categoryOrder = [
                     "CURRENT ASSETS",
                     "FIXED ASSETS",
@@ -29,8 +27,6 @@ const BalanceSheets = () => {
                     "LONG TERM LIABILITIES",
                     "EQUITY"
                 ];
-
-                // **Aggregate amounts by category**
                 const aggregatedData = response.data.reduce((acc, { category, subcategory, total_amount }) => {
                     if (!acc[category]) {
                         acc[category] = { category, total_amount: 0, subcategories: [] };
@@ -39,8 +35,6 @@ const BalanceSheets = () => {
                     acc[category].subcategories.push({ subcategory, amount: Number(total_amount) || 0 });
                     return acc;
                 }, {});
-
-                // **Convert to array and sort by predefined category order**
                 const orderedData = Object.values(aggregatedData).sort((a, b) => {
                     return categoryOrder.indexOf(a.category) - categoryOrder.indexOf(b.category);
                 });
@@ -128,13 +122,11 @@ const BalanceSheets = () => {
                         </thead>
                         <tbody>
                             {financialData.map(({ category, total_amount, subcategories }) => {
-                                // Check if the category is "DEPOSITS"
                                 const isDeposits = category === "DEPOSITS";
                                 const hasDistinctSubcategories = subcategories.length > 0 && !isDeposits;
 
                                 return (
                                     <React.Fragment key={category}>
-                                        {/* **Category Row with Total Amount** */}
                                         <tr className="bg-gray-200 text-corvid-blue font-bold">
                                             <td
                                                 className={`px-4 py-2 flex items-center ${
@@ -143,7 +135,6 @@ const BalanceSheets = () => {
                                                 onClick={() => hasDistinctSubcategories && toggleCategory(category)}
                                             >
                                                 {category}
-                                                {/* Show dropdown arrow only if there are distinct subcategories and it’s NOT "DEPOSITS" */}
                                                 {hasDistinctSubcategories && (
                                                     <ChevronDown
                                                         className={`transition-transform ${
@@ -156,8 +147,6 @@ const BalanceSheets = () => {
                                                 ${total_amount.toLocaleString("en-US")}
                                             </td>
                                         </tr>
-
-                                        {/* **Subcategory Rows (Only if expandable and NOT "DEPOSITS")** */}
                                         {hasDistinctSubcategories &&
                                             expandedCategories[category] &&
                                             subcategories.map(({ subcategory, amount }, index) => (

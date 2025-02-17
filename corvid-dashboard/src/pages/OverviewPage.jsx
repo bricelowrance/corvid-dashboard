@@ -1,7 +1,5 @@
 import Header from "../components/common/Header"
 import ConsolidatedISTable from "../components/overview/ConsolidatedISTable"
-import IncomeCharts from "../components/overview/IncomeCharts"
-import IncomeComparisonChart from "../components/overview/IncomeComparisonChart"
 import IncomeStatements from "../components/overview/IncomeStatements"
 import IncomeStatements2 from "../components/overview/IncomeStatements2"
 
@@ -15,10 +13,8 @@ const OverviewPage = () => {
               <IncomeStatements />
               <IncomeStatements2 />
             </div>
-            <div classname="grid grid-cols-1 gap-0 mb-8">
+            <div className="grid grid-cols-1 gap-0 mb-8">
               <ConsolidatedISTable />
-              <IncomeCharts />
-              <IncomeComparisonChart />
             </div>
         </main>
 

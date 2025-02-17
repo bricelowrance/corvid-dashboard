@@ -250,25 +250,11 @@ app.get("/income-summary", async (req, res) => {
         const values = [year, period, entity];
 
         const result = await pool.query(query, values);
-     
-        const structuredData = {};
-        result.rows.forEach(({ category, subcategory, total_amount }) => {
-            if (!structuredData[category]) {
-                structuredData[category] = {
-                    category,
-                    total_amount: 0,
-                    subcategories: []
-                };
-            }
-            structuredData[category].total_amount += Number(total_amount);
-            if (subcategory) {
-                structuredData[category].subcategories.push({
-                    subcategory,
-                    amount: Number(total_amount)
-                });
-            }
-        });
-        res.json(Object.values(structuredData));
+        
+        // Log response to verify subcategories exist
+        console.log("API Response Data:", result.rows);
+        
+        res.json(result.rows);
     } catch (err) {
         console.error("Error fetching income statement:", err.message);
         res.status(500).json({ error: "Server error" });

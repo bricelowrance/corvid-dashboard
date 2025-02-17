@@ -1,4 +1,4 @@
-import { BarChart2, Menu, ChevronDown, LogOut } from "lucide-react";
+import { BarChart2, Menu, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -7,18 +7,22 @@ const SIDEBAR_ITEMS = [
     { name: "Income Statement", icon: BarChart2, color: "#23356b", href: "/" },
     { name: "Balance Sheet", icon: BarChart2, color: "#23356b", href: "/bs" },
     { name: "Statement of Cash Flow", icon: BarChart2, color: "#23356b", href: "/cf" },
+    /**{ name: "Testing", icon: BarChart2, color: "#23356b", href: "/test" }, **/
 ];
 
 const Sidebar = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [user, setUser] = useState({ first_name: "", last_name: "" });
+    const [user, setUser] = useState({ name: "", picture: "" });
     const navigate = useNavigate(); 
 
     useEffect(() => {
         const updateUser = () => {
             const storedUser = JSON.parse(localStorage.getItem("user"));
             if (storedUser) {
-                setUser({ first_name: storedUser.first_name, last_name: storedUser.last_name });
+                setUser({ 
+                    name: storedUser.name || "Guest", 
+                    picture: storedUser.picture || "C:\Users\blowrance\Downloads\corvid-dashboard\corvid-dashboard\public\CorvidLogo_V_White.png"
+                });
             }
         };
 
@@ -30,7 +34,6 @@ const Sidebar = () => {
 
     const handleLogout = () => {
         localStorage.removeItem("user");
-        localStorage.removeItem("token");
         navigate("/login"); 
         window.location.reload(); 
     };
@@ -43,6 +46,7 @@ const Sidebar = () => {
         >
             <div className="h-screen bg-white bg-opacity-100 backdrop-blur-md flex flex-col border-r border-gray-700">
 
+                {/* Sidebar Header */}
                 <div className="flex justify-between items-center p-4">
                     <motion.button
                         whileHover={{ scale: 1.1 }}
@@ -65,6 +69,7 @@ const Sidebar = () => {
                     )}
                 </div>
 
+                {/* User Profile Section */}
                 <div className="p-4 flex items-center justify-center">
                     <img
                         src="/CorvidLogo_Blue.png"
@@ -72,11 +77,10 @@ const Sidebar = () => {
                         className={`transition-all duration-300 ${isSidebarOpen ? "w-32" : "w-10"}`}
                     />
                 </div>
-
                 <div className="flex flex-col items-center py-6">
                     <img
-                        src="/CorvidLogo_V_White.png"
-                        alt="User"
+                        src={user.picture}
+                        alt="User Profile"
                         className={`rounded-full border-2 border-gray-600 object-cover transition-all duration-300 ${isSidebarOpen ? "w-20 h-20" : "w-10 h-10"}`}
                     />
                     <AnimatePresence>
@@ -88,42 +92,41 @@ const Sidebar = () => {
                                 className="text-center mt-3"
                             >
                                 <p className="text-corvid-blue text-lg font-semibold">
-                                    {user.first_name} {user.last_name}
+                                    {user.name}
                                 </p>
-                                <p className="text-corvid-blue opacity-60 text-sm">Admin</p>
                             </motion.div>
                         )}
                     </AnimatePresence>
                 </div>
 
+                {/* Sidebar Navigation */}
                 <div className="flex-grow overflow-y-auto">
                     <nav className="mt-4">
-                        {SIDEBAR_ITEMS.map((item, index) => (
-                            <div key={item.name}>
-                                <Link to={item.href}>
-                                    <div className={`flex items-center ${isSidebarOpen ? "justify-between" : "justify-center"} p-4 text-sm text-corvid-blue font-medium rounded-lg hover:bg-gray-300 transition-colors cursor-pointer`}>
-                                        <div className="flex items-center">
-                                            <item.icon size={20} style={{ color: item.color, minWidth: "20px" }} />
-                                            <AnimatePresence>
-                                                {isSidebarOpen && (
-                                                    <motion.span
-                                                        className="ml-4 whitespace-nowrap"
-                                                        initial={{ opacity: 0, width: 0 }}
-                                                        animate={{ opacity: 1, width: "auto" }}
-                                                        exit={{ opacity: 0, width: 0 }}
-                                                    >
-                                                        {item.name}
-                                                    </motion.span>
-                                                )}
-                                            </AnimatePresence>
-                                        </div>
+                        {SIDEBAR_ITEMS.map((item) => (
+                            <Link to={item.href} key={item.name}>
+                                <div className={`flex items-center ${isSidebarOpen ? "justify-between" : "justify-center"} p-4 text-sm text-corvid-blue font-medium rounded-lg hover:bg-gray-300 transition-colors cursor-pointer`}>
+                                    <div className="flex items-center">
+                                        <item.icon size={20} style={{ color: item.color, minWidth: "20px" }} />
+                                        <AnimatePresence>
+                                            {isSidebarOpen && (
+                                                <motion.span
+                                                    className="ml-4 whitespace-nowrap"
+                                                    initial={{ opacity: 0, width: 0 }}
+                                                    animate={{ opacity: 1, width: "auto" }}
+                                                    exit={{ opacity: 0, width: 0 }}
+                                                >
+                                                    {item.name}
+                                                </motion.span>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
-                                </Link>
-                            </div>
+                                </div>
+                            </Link>
                         ))}
                     </nav>
                 </div>
 
+                {/* Logout Button for Collapsed Sidebar */}
                 {!isSidebarOpen && (
                     <motion.button
                         onClick={handleLogout}
@@ -138,5 +141,6 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+
 
 

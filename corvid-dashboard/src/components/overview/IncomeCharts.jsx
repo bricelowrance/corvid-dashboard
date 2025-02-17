@@ -27,7 +27,7 @@ const IncomeCharts = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/data", {
+                const response = await axios.get("http://localhost:5000/income-summary", {
                     params: { year, category, entity },
                 });
 
