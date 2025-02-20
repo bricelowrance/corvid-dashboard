@@ -5,7 +5,13 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+    origin: ["https://finance.corvidtec.com"],
+    credentials: true
+};
+app.use(cors(corsOptions));
+
+
 app.use(express.json());
 
 const pool = new Pool({
@@ -18,7 +24,7 @@ const pool = new Pool({
 
 const secretKey = process.env.JWT_SECRET;
 
-app.post("/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
     const { username, password } = req.body;
 
     try {
@@ -57,11 +63,11 @@ app.post("/login", async (req, res) => {
     }
 });
 
-app.post("/logout", (req, res) => {
+app.post("/api/logout", (req, res) => {
     res.json({ message: "Logged out successfully" });
 });
 
-app.get("/data", async (req, res) => {
+app.get("/api/data", async (req, res) => {
     try {
         const { year, category, entity } = req.query;
 
@@ -94,7 +100,7 @@ app.get("/data", async (req, res) => {
     }
 });
 
-app.get("/income", async (req, res) => {
+app.get("/api/income", async (req, res) => {
     try {
         const { entity } = req.query;
 
@@ -126,7 +132,7 @@ app.get("/income", async (req, res) => {
     }
 });
 
-app.get("/balance", async (req, res) => {
+app.get("/api/balance", async (req, res) => {
     try {
         const { entity } = req.query;
 
@@ -158,7 +164,7 @@ app.get("/balance", async (req, res) => {
     }
 });
 
-app.get("/net_income", async (req, res) => {
+app.get("/api/net_income", async (req, res) => {
     try {
         const { entity, period } = req.query;
         if (!period) {
@@ -207,7 +213,7 @@ app.get("/net_income", async (req, res) => {
     }
 });
 
-app.get("/financial-summary", async (req, res) => {
+app.get("/api/financial-summary", async (req, res) => {
     try {
         const { year, period, entity } = req.query;
 
@@ -232,7 +238,7 @@ app.get("/financial-summary", async (req, res) => {
     }
 });
 
-app.get("/income-summary", async (req, res) => {
+app.get("/api/income-summary", async (req, res) => {
     try {
         const { year, period, entity } = req.query;
 
@@ -251,9 +257,6 @@ app.get("/income-summary", async (req, res) => {
 
         const result = await pool.query(query, values);
         
-        // Log response to verify subcategories exist
-        console.log("API Response Data:", result.rows);
-        
         res.json(result.rows);
     } catch (err) {
         console.error("Error fetching income statement:", err.message);
@@ -261,7 +264,7 @@ app.get("/income-summary", async (req, res) => {
     }
 });
 
-app.get("/income-chart", async (req, res) => {
+app.get("/api/income-chart", async (req, res) => {
     try {
         const { year, entity, category } = req.query;
 

@@ -51,7 +51,7 @@ const ConsolidatedBSTable = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/balance", {
+                const response = await axios.get("/api/balance", {
                     params: { entity: selectedCompany === "Consolidated" ? undefined : selectedCompany },
                 });
     

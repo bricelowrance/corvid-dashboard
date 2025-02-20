@@ -8,10 +8,8 @@ const LoginPage = ({ onLoginSuccess }) => {
         if (credentialResponse?.credential) {
             const decoded = jwtDecode(credentialResponse.credential);
             console.log("User Info:", decoded);
-            localStorage.setItem("user", JSON.stringify(decoded)); // Store user data
+            localStorage.setItem("user", JSON.stringify(decoded));
             onLoginSuccess(decoded);
-
-            // Force a page refresh after login to ensure navigation works
             setTimeout(() => {
                 window.location.href = "/";
             }, 500);
@@ -38,7 +36,6 @@ const LoginPage = ({ onLoginSuccess }) => {
                         
                     </h2>
                     <div className="flex flex-col items-center space-y-4">
-                        {/* Google Login Button */}
                         <GoogleLogin
                             onSuccess={handleLoginSuccess}
                             onError={() => console.log("Login Failed")}

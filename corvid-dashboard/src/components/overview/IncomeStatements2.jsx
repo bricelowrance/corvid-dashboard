@@ -16,7 +16,7 @@ const IncomeStatements2 = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get("http://localhost:5000/income-summary", {
+                const response = await axios.get("/api/income-summary", {
                     params: { year, period, entity },
                 });
     

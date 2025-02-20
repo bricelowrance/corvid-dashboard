@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronsDown, ChevronsUp } from "lucide-react";
 import axios from "axios";
 
 const IncomeStatements = () => {
@@ -17,7 +17,7 @@ const IncomeStatements = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get("http://localhost:5000/income-summary", {
+                const response = await axios.get("/api/income-summary", {
                     params: { year, period, entity },
                 });
 
@@ -29,7 +29,7 @@ const IncomeStatements = () => {
                 }
 
                 // Fetch previous month data
-                const prevResponse = await axios.get("http://localhost:5000/income-summary", {
+                const prevResponse = await axios.get("/api/income-summary", {
                     params: { year: prevYear, period: prevPeriod, entity },
                 });
     
@@ -98,19 +98,23 @@ const IncomeStatements = () => {
         return subItem ? subItem.amount : 0;
     };
 
-   /**const getArrow = (category) => {
+    const getArrow = (category) => { 
         if (!prevFinancialData || !financialData) return null;
     
         const prevAmount = prevFinancialData[category]?.total_amount || 0;
         const currentAmount = financialData.find((item) => item.category === category)?.total_amount || 0;
     
         if (currentAmount > prevAmount) {
-            return <span color="green">🔺</span>;
+            return <ChevronsUp className="text-green-500 w-5 h-4 text-right" />;
         } else if (currentAmount < prevAmount) {
-            return <span className="">🔻</span>;
+            return <ChevronsDown className="text-red-500 w-5 h-4 text-right" />;
+        } else if (currentAmount === prevAmount) {
+            return <span></span>;
         }
+        
         return null;
-    }; **/
+    };
+     
 
     let operatingCosts = 0;
     let netIncome = 0;
@@ -257,7 +261,7 @@ const IncomeStatements = () => {
                                                 
                                             </td>
                                             <td className="px-4 py-2 text-right">
-                                                ${total_amount.toLocaleString("en-US")}
+                                                ${total_amount.toLocaleString("en-US")} 
                                             </td>
                                         </tr>
 
@@ -267,7 +271,8 @@ const IncomeStatements = () => {
                                             subcategories.map(({ subcategory, amount }, index) => (
                                                 <tr key={`subcategory-${category}-${index}`} className="text-sm text-corvid-blue text-gray-600">
                                                     <td className="px-6 py-1">{subcategory}</td>
-                                                    <td className="px-4 py-1 text-right">${amount.toLocaleString("en-US")} </td>
+                                                    <td className="px-4 py-1 text-right">${amount.toLocaleString("en-US")} 
+                                                    </td>
                                                 </tr>
                                             ))}
                                     </React.Fragment>

@@ -1,13 +1,14 @@
-import { BarChart2, Menu, LogOut } from "lucide-react";
+import { BarChart2, Menu, LogOut, Vote, DollarSign, Scale, Landmark } from "lucide-react";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 
 const SIDEBAR_ITEMS = [
     { name: "Income Statement", icon: BarChart2, color: "#23356b", href: "/" },
-    { name: "Balance Sheet", icon: BarChart2, color: "#23356b", href: "/bs" },
-    { name: "Statement of Cash Flow", icon: BarChart2, color: "#23356b", href: "/cf" },
-    /**{ name: "Testing", icon: BarChart2, color: "#23356b", href: "/test" }, **/
+    { name: "Balance Sheet", icon: Scale, color: "#23356b", href: "/bs" },
+    { name: "Statement of Cash Flow", icon: DollarSign, color: "#23356b", href: "/cf" },
+    /**{ name: "IC Vote", icon: Vote, color: "#23356b", href: "/vote" },
+    { name: "IC Exec", icon: Landmark, color: "#23356b", href: "/exec" },**/
 ];
 
 const Sidebar = () => {

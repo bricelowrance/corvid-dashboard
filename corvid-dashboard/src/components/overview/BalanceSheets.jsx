@@ -16,7 +16,7 @@ const BalanceSheets = () => {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get("http://localhost:5000/financial-summary", {
+                const response = await axios.get("/api/financial-summary", {
                     params: { year, period, entity },
                 });
                 const categoryOrder = [

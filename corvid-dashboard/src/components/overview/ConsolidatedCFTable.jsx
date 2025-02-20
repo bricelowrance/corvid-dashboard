@@ -32,7 +32,7 @@ const ConsolidatedCFTable = () => {
         const fetchBalanceSheetData = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get("http://localhost:5000/balance", {
+                const response = await axios.get("/api/balance", {
                     params: { entity: selectedCompany === "Consolidated" ? undefined : selectedCompany },
                 });
 
@@ -54,7 +54,7 @@ const ConsolidatedCFTable = () => {
             try {
                 console.log("Fetching Net Income for:", selectedCompany, "Month:", selectedMonth + 1);
         
-                const response = await axios.get("http://localhost:5000/net_income", {
+                const response = await axios.get("/api/net_income", {
                     params: {
                         entity: selectedCompany === "Consolidated" ? undefined : selectedCompany,
                         period: selectedMonth + 1,

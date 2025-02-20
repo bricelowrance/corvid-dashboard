@@ -35,7 +35,7 @@ const ConsolidatedISTable = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/income", {
+                const response = await axios.get("/api/income", {
                     params: { entity: selectedCompany === "Consolidated" ? undefined : selectedCompany },
                 });
     

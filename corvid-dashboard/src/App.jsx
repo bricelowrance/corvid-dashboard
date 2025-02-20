@@ -5,7 +5,8 @@ import OverviewPage from "./pages/OverviewPage";
 import BPage from "./pages/BPage";
 import BSPage from "./pages/BSPage";
 import CFPage from "./pages/CFPage";
-import Test from "./pages/Test";
+import ICVoter from "./pages/ICVoter";
+import ICExec from "./pages/ICExec";
 import LoginPage from "./pages/LoginPage"; // Import LoginPage
 import { googleLogout } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode"; // Fix import
@@ -79,7 +80,8 @@ function App() {
                                         <Route path="/b" element={<BPage />} />
                                         <Route path="/bs" element={<BSPage />} />
                                         <Route path="/cf" element={<CFPage />} />
-                                        <Route path="/test" element={<Test />} />
+                                        <Route path="/vote" element={<ICVoter />} />
+                                        <Route path="/exec" element={<ICExec />} />
                                         <Route path="*" element={<Navigate to="/" />} />
                                     </Routes>
                                 </div>

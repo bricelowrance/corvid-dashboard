@@ -1,11 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.corvid-blue{
+    color: #23356b;
+}
+
 .bg-corvid-blue{
     color: #23356b;
 }
 
 .text-corvid-blue{
+    color: #23356b;
+}
+
+.divide-corvid-blue{
     color: #23356b;
 }
 
